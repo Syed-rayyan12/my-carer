@@ -1,0 +1,45 @@
+@import "tailwindcss" source(none);
+
+@source "./";
+@source "../components";
+@source not inline("[&P]:font-medium max-[80%]:gap-[20px]");
+
+@utility font-nunito {
+  font-family: var(--font-nunito), sans-serif;
+}
+
+@utility font-commissioner {
+  font-family: var(--font-commissioner), sans-serif;
+}
+
+@utility font-georgia {
+  font-family: Georgia, serif;
+}
+
+@utility font-arial {
+  font-family: Arial, sans-serif;
+}
+
+@keyframes testimonialMoveLeft {
+
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+
+}
+
+@keyframes testimonialMoveRight {
+
+  from {
+    transform: translateX(-50%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+
+}
