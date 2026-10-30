@@ -1,0 +1,8 @@
+import { useRef, useState } from "react";
+import { ImagePlus } from "lucide-react";
+
+export default function BlogImagePanel({ image, onChange }: { image: string; onChange: (image: string) => void }) {
+  const ref = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState("");
+  return <section className="rounded-xl border border-[#e3e5e7] p-5"><h2 className="mb-4 text-sm font-bold">Featured image</h2>{image ? <img src={image} alt="Featured article image" className="aspect-[1.8/1] w-full rounded-lg object-cover" /> : <div className="flex aspect-[1.8/1] items-center justify-center rounded-lg border border-dashed border-[#dfe4e1] bg-gray-50 text-[#98a2b3]"><ImagePlus size={30} /></div>}<div className="mt-2 flex gap-3 text-sm"><button type="button" className="text-[#ff2f68]" onClick={() => ref.current?.click()}>{image ? "Replace" : "Upload image"}</button>{image && <button type="button" className="text-[#61706c]" onClick={() => onChange("")}>Remove</button>}</div><input ref={ref} type="file" accept="image/jpeg,image/png,image/webp" aria-label="Upload featured image" className="hidden" onChange={event => { const file = event.target.files?.[0]; if (!file) return; if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 2 * 1024 * 1024) { setError("Choose a JPG, PNG or WebP image under 2 MB."); return; } const reader = new FileReader(); reader.onerror = () => setError("Unable to read this image. Try again."); reader.onload = () => { if (typeof reader.result === "string") { onChange(reader.result); setError(""); } }; reader.readAsDataURL(file); event.target.value = ""; }} />{error && <p role="alert" className="mt-2 text-xs text-red-700">{error}</p>}</section>;
+}

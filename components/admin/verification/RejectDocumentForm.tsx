@@ -1,0 +1,7 @@
+import { useState } from "react";
+import type { VerificationRecord } from "./verificationData";
+
+export default function RejectDocumentForm({ record, onCancel, onSubmit }: { record: VerificationRecord; onCancel: () => void; onSubmit: (reason: string) => void }) {
+  const [reason, setReason] = useState("");
+  return <form onSubmit={event => { event.preventDefault(); if (reason.trim()) onSubmit(reason.trim()); }}><div className="px-6 pb-9"><p className="mb-4 text-sm leading-5 text-[#61706c]"><span className="text-[#ff2f68]">{record.name}</span> will be emailed this reason and asked to re-upload.</p><label htmlFor="document-rejection-reason" className="mb-2 block text-sm">Document rejected because:</label><textarea autoFocus id="document-rejection-reason" required maxLength={2000} value={reason} onChange={event => setReason(event.target.value)} placeholder="Add a short, clear explanation…" className="h-[98px] w-full resize-none rounded-lg border border-[#dfe4e1] p-3 text-sm outline-none placeholder:text-[#98a2b3] focus:border-[#ff2f68]" /></div><footer className="flex justify-end gap-2 border-t border-[#dfe4e1] bg-[#f4f6f5] px-6 py-4"><button type="button" className="rounded-lg border border-[#dfe4e1] bg-white px-4 py-2.5 text-sm" onClick={onCancel}>Cancel</button><button type="submit" disabled={!reason.trim()} className="rounded-lg bg-[#ff2f68] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">Submit</button></footer></form>;
+}

@@ -1,0 +1,11 @@
+"use client";
+
+import { useState } from "react";
+import type { AccountSettings } from "./settingsData";
+
+export default function AccountSettingsForm({ initialValue, onSave }: { initialValue: AccountSettings; onSave: (settings: AccountSettings) => void }) {
+  const [settings, setSettings] = useState(initialValue);
+  const fields: { name: "accountEmail" | "email" | "phone"; label: string; type: string; autoComplete: string }[] = [{ name: "accountEmail", label: "Account email", type: "email", autoComplete: "username" }, { name: "email", label: "Email Address", type: "email", autoComplete: "email" }, { name: "phone", label: "Phone Number", type: "tel", autoComplete: "tel" }];
+
+  return <section className="overflow-hidden rounded-[18px] border border-[#e5e2dc] bg-white shadow-[0_8px_18px_#10192915]"><h2 className="border-b border-[#e5e2dc] px-5 py-4 font-nunito text-base font-bold text-[#202925]">Account settings</h2><form id="account-settings-form" className="space-y-4 p-5" onSubmit={event => { event.preventDefault(); onSave({ ...settings, accountEmail: settings.accountEmail.trim(), email: settings.email.trim(), phone: settings.phone.trim() }); }}>{fields.map(field => <label className="block font-nunito text-[13px] text-[#475950]" htmlFor={`settings-${field.name}`} key={field.name}>{field.label}<input id={`settings-${field.name}`} type={field.type} autoComplete={field.autoComplete} value={settings[field.name]} onChange={event => setSettings({ ...settings, [field.name]: event.target.value })} className="mt-1.5 h-[38px] w-full rounded-lg border border-[#e5e2dc] bg-white px-3 font-nunito text-sm text-[#344054] outline-none focus:border-[#ff2f68] focus:ring-2 focus:ring-[#ff2f68]/10" /></label>)}<label htmlFor="settings-language" className="block font-nunito text-[13px] text-[#475950]">Listing language<select id="settings-language" value={settings.language} onChange={event => setSettings({ ...settings, language: event.target.value })} className="mt-1.5 h-[38px] w-full rounded-lg border border-[#e5e2dc] bg-white px-3 font-nunito text-sm text-[#344054] outline-none focus:border-[#ff2f68]"><option>English (UK)</option><option>Welsh</option><option>Urdu</option><option>Punjabi</option></select></label></form></section>;
+}

@@ -1,0 +1,10 @@
+import { useRef } from "react";
+import { Bold, Heading2, Italic, Link, List, Quote } from "lucide-react";
+
+export default function BlogContentEditor({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+  const words = value.trim() ? value.trim().split(/\s+/).length : 0;
+  function format(before: string, after = "") { const input = ref.current; if (!input) return; const start = input.selectionStart, end = input.selectionEnd; const selection = value.slice(start, end) || "text"; onChange(value.slice(0, start) + before + selection + after + value.slice(end)); requestAnimationFrame(() => { input.focus(); input.setSelectionRange(start + before.length, start + before.length + selection.length); }); }
+  const actions = [{ label: "Heading", icon: Heading2, before: "\n## " }, { label: "Bold", icon: Bold, before: "**", after: "**" }, { label: "Italic", icon: Italic, before: "_", after: "_" }, { label: "List", icon: List, before: "\n- " }, { label: "Quote", icon: Quote, before: "\n> " }, { label: "Link", icon: Link, before: "[", after: "](https://example.com)" }];
+  return <div className="overflow-hidden rounded-lg border border-[#dfe4e1]"><div className="flex flex-wrap gap-1 border-b border-[#dfe4e1] bg-[#f4f6f5] px-3 py-2" role="toolbar" aria-label="Article formatting">{actions.map(({ label, icon: Icon, before, after }) => <button key={label} type="button" title={label} aria-label={label} className="rounded p-1.5 text-[#61706c] hover:bg-white hover:text-[#ff2f68]" onClick={() => format(before, after)}><Icon size={16} /></button>)}</div><textarea id="blog-content" ref={ref} value={value} onChange={event => onChange(event.target.value)} maxLength={100000} placeholder="Write your article…" className="block min-h-[335px] w-full resize-y px-4 py-3 font-mono text-sm leading-6 outline-none placeholder:text-[#98a2b3]" /><div className="border-t border-[#dfe4e1] bg-[#f4f6f5] px-4 py-2 text-xs text-[#61706c]">{words} words · ~{Math.max(1, Math.ceil(words / 200))} min read</div></div>;
+}

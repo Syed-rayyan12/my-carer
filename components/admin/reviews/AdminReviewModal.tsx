@@ -1,0 +1,8 @@
+import AdminModal from "../shared/AdminModal";
+import AdminBadge from "../shared/AdminBadge";
+import AdminStars from "../shared/AdminStars";
+import type { AdminReview } from "./adminReviewsData";
+
+export default function AdminReviewModal({ review, onClose, onSave }: { review: AdminReview; onClose: () => void; onSave: (review: AdminReview) => void }) {
+  return <AdminModal title="Review details" onClose={onClose}><div className="px-6 pb-6"><div className="mb-4 flex items-center justify-between gap-3"><AdminStars rating={review.rating} /><AdminBadge status={review.status} /></div><h3 className="mb-2 text-lg font-bold">{review.title}</h3><p className="mb-4 text-sm leading-6 text-[#61706c]">{review.message}</p><p className="text-sm">{review.name}</p><p className="mt-1 text-xs text-[#61706c]">for {review.caregiver}</p><p className="mt-4 text-xs text-[#61706c]">Moderation changes are saved on this device.</p></div><footer className="flex flex-wrap justify-end gap-2 border-t border-[#dfe4e1] bg-[#f4f6f5] px-6 py-4"><button type="button" onClick={onClose} className="rounded-lg border border-[#dfe4e1] bg-white px-4 py-2.5 text-sm">Close</button>{review.status !== "Hidden" && <button type="button" className="rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm text-[#c6251a]" onClick={() => onSave({ ...review, status: "Hidden" })}>Hide Review</button>}{review.status !== "Published" && <button type="button" className="rounded-lg bg-[#ff2f68] px-4 py-2.5 text-sm font-semibold text-white" onClick={() => onSave({ ...review, status: "Published" })}>Publish Review</button>}</footer></AdminModal>;
+}

@@ -113,8 +113,8 @@ export default function WebsiteFooter() {
           </svg>
         </span>
 
-        <span>
-          Shawbriggs, Barrow Road<br />
+        <span className="w-fit">
+          Shawbriggs, Barrow Road
           Goxhill, NorthDN19 7LN
         </span>
 
@@ -165,6 +165,10 @@ export default function WebsiteFooter() {
       <span className="text-[#ff2f68]">|</span>
 
       <Link className="text-[#ffffff] [transition:color_0.2s_ease] hover:text-[#ff2f68]" href="/privacy-policy">Privacy Policy</Link>
+
+      <span className="text-[#ff2f68]">|</span>
+
+      <Link className="text-[#ffffff] [transition:color_0.2s_ease] hover:text-[#ff2f68]" href="/sitemap">Sitemap</Link>
     </div>
 
   </div>

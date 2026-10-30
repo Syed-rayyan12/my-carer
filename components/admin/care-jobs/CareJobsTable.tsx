@@ -1,0 +1,7 @@
+import Link from "next/link";
+import type { AdminCareJob } from "./careJobsData";
+import CareJobStatusBadge from "./CareJobStatusBadge";
+
+export default function CareJobsTable({ jobs }: { jobs: AdminCareJob[] }) {
+  return <div className="overflow-x-auto"><table className="w-full min-w-[850px] border-collapse text-left"><thead><tr className="border-y border-[#e5e7e7] text-sm text-black">{["Job", "Location", "Posted by", "Applicants", "Status", "Action"].map(heading => <th key={heading} className={`px-4 py-3 font-normal ${["Applicants", "Status", "Action"].includes(heading) ? "text-center" : ""}`}>{heading}</th>)}</tr></thead><tbody>{jobs.map(job => <tr key={job.id} className="border-b border-[#e5e7e7] last:border-b-0"><td className="w-[32%] px-4 py-3.5"><p className="text-base leading-5">{job.title}</p><p className="mt-0.5 text-xs text-[#61706c]">{job.careType} · {job.date}</p></td><td className="px-4 py-3.5 text-sm text-[#61706c]">{job.location}</td><td className="px-4 py-3.5 text-sm">{job.postedBy}</td><td className="px-4 py-3.5 text-center text-sm text-[#61706c]">{job.applicants}</td><td className="px-4 py-3.5 text-center"><CareJobStatusBadge status={job.status} /></td><td className="px-4 py-3.5 text-center"><Link href={`/admin-dashboard/care-jobs/${job.id}`} className="rounded px-1 py-2 text-sm text-[#ff2f68] hover:underline">{job.status === "Pending" ? "Review" : "View"}</Link></td></tr>)}</tbody></table>{!jobs.length && <p className="py-12 text-center text-sm text-[#667085]">No jobs match your search.</p>}</div>;
+}

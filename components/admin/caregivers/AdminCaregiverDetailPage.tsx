@@ -1,0 +1,27 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Ban, Check, Pencil, Trash2 } from "lucide-react";
+import { useAdminDashboard } from "../AdminDashboardContext";
+import { getAdminCaregivers, getAdminCaregiverProfile } from "./adminCaregiverData";
+import AdminCaregiverBadge from "./AdminCaregiverBadge";
+import CaregiverProfileInformation from "./CaregiverProfileInformation";
+import CaregiverProfessionalDetails from "./CaregiverProfessionalDetails";
+import CaregiverVerificationPanel from "./CaregiverVerificationPanel";
+import CaregiverAccountModal, { type CaregiverAccountAction } from "./CaregiverAccountModal";
+import AdminCaregiverDetailSkeleton from "./AdminCaregiverDetailSkeleton";
+
+export default function AdminCaregiverDetailPage({ caregiverId }: { caregiverId: string }) {
+  const { data, ready, storageError, notice, setDialog, updateCaregiver, setCaregiverSuspended, deleteCaregiver } = useAdminDashboard();
+  const router = useRouter();
+  const [action, setAction] = useState<CaregiverAccountAction>(null);
+  const caregiver = getAdminCaregivers(data).find(person => person.id === caregiverId);
+
+  if (!ready) return <AdminCaregiverDetailSkeleton />;
+  if (!caregiver) return <main className="mx-auto max-w-[1530px] px-8 pt-2 max-[640px]:px-4"><section className="rounded-xl border border-[#d9d9d9] bg-white p-6"><Link href="/admin-dashboard/caregivers" className="mb-5 inline-flex items-center gap-2 font-nunito text-sm text-[#ff2f68]"><ArrowLeft size={16} />Caregivers</Link><h1 className="font-jakarta text-xl font-semibold">Caregiver not found</h1><p className="mt-2 font-nunito text-sm text-[#667085]">This account is not available in this browser. Return to Caregivers to choose another account.</p></section></main>;
+  const profile = getAdminCaregiverProfile(caregiver);
+
+  return <main className="mx-auto max-w-[1530px] px-8 pt-2 pb-4 max-[1250px]:px-6 max-[640px]:px-4"><section className="min-h-[calc(100dvh-112px)] rounded-[11px] border border-[#d9d9d9] bg-white px-3.5 pt-4 pb-10"><Link href="/admin-dashboard/caregivers" className="inline-flex items-center gap-2 font-nunito text-sm text-[#ff2f68] hover:underline"><ArrowLeft size={16} />Caregivers</Link><div className="mt-9 mb-6 flex flex-wrap items-center justify-between gap-5"><div className="flex items-center gap-4"><span className="flex size-16 shrink-0 items-center justify-center rounded-full bg-[#ff2f68] font-nunito text-lg font-bold text-white">{caregiver.initials}</span><div><h1 className="mb-1 font-commissioner text-[22px] font-bold text-[#202925]">{caregiver.name}</h1><AdminCaregiverBadge value={caregiver.status} /><p className="mt-2 font-nunito text-sm text-[#64716b]">{caregiver.location} · Joined {caregiver.date} 2026</p></div></div><div className="flex flex-wrap items-center gap-2"><button type="button" className="inline-flex min-h-10 items-center gap-2 px-3 py-2 font-nunito text-sm text-[#c6251a] hover:underline" onClick={() => setAction({ type: "delete" })}><Trash2 size={17} />Delete Account</button><button type="button" className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-[#e3e5e7] px-4 py-2 font-nunito text-sm text-[#202925] hover:bg-gray-50" onClick={() => setAction({ type: "edit" })}><Pencil size={17} />Edit Profile</button><button type="button" className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-[#e3e5e7] px-4 py-2 font-nunito text-sm text-[#202925] hover:bg-gray-50" onClick={() => setAction({ type: "suspend" })}><Ban size={17} />{caregiver.status === "Suspended" ? "Reactivate Account" : "Suspend Account"}</button><button type="button" disabled={caregiver.status === "Active"} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-[#ff2f68] px-4 py-2 font-nunito text-sm font-semibold text-white hover:bg-[#e92359] disabled:opacity-50" onClick={() => setDialog({ type: "approve", userId: caregiver.id })}><Check size={17} />{caregiver.status === "Active" ? "Account Approved" : "Approve Account"}</button></div></div><p className="sr-only" role="status">{notice}</p>{storageError && <p role="status" className="mb-4 font-nunito text-sm text-amber-700">Browser storage is unavailable. Changes will only last for this visit.</p>}<div className="grid grid-cols-[minmax(0,2.05fr)_minmax(290px,1fr)] items-start gap-6 max-[1100px]:grid-cols-1"><div className="space-y-6"><CaregiverProfileInformation caregiver={caregiver} profile={profile} /><CaregiverProfessionalDetails profile={profile} /><section className="rounded-xl border border-[#e3e5e7] bg-white p-5"><h2 className="mb-4 font-nunito text-sm font-bold text-[#202925]">Reviews</h2><p className="font-nunito text-sm text-[#64716b]">No reviews yet. Reviews appear once care seekers complete a booking.</p></section></div><CaregiverVerificationPanel caregiver={caregiver} profile={profile} onDocument={document => setAction({ type: "document", document })} /></div></section><CaregiverAccountModal caregiver={caregiver} action={action} onClose={() => setAction(null)} onSave={updated => { updateCaregiver(updated); setAction(null); }} onSuspension={() => { setCaregiverSuspended(caregiver.id, caregiver.status !== "Suspended"); setAction(null); }} onDelete={() => { deleteCaregiver(caregiver.id); setAction(null); router.push("/admin-dashboard/caregivers"); }} /></main>;
+}

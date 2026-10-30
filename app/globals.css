@@ -4,6 +4,11 @@
 @source "../components";
 @source not inline("[&P]:font-medium max-[80%]:gap-[20px]");
 
+@theme inline {
+  --font-bebas: var(--font-bebas-neue), sans-serif;
+  --font-jakarta: var(--font-plus-jakarta-sans), sans-serif;
+}
+
 @utility font-nunito {
   font-family: var(--font-nunito), sans-serif;
 }

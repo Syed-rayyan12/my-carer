@@ -1,0 +1,7 @@
+import type { AdminReview } from "./adminReviewsData";
+import AdminBadge from "../shared/AdminBadge";
+import AdminStars from "../shared/AdminStars";
+
+export default function AdminReviewsTable({ reviews, onView }: { reviews: AdminReview[]; onView: (review: AdminReview) => void }) {
+  return <div className="overflow-x-auto"><table className="w-full min-w-[850px] border-collapse text-left text-sm"><thead><tr className="border-y border-[#e5e7e7] text-xs text-black">{["User", "Review", "Rating", "Status", "Action"].map(heading => <th key={heading} className="px-4 py-3.5 font-normal last:text-right">{heading}</th>)}</tr></thead><tbody>{reviews.map(review => <tr key={review.id} className="border-b border-[#e5e7e7] last:border-b-0"><td className="px-4 py-3.5"><p>{review.name}</p><p className="mt-0.5 text-xs text-[#61706c]">for {review.caregiver}</p></td><td className="w-[48%] px-4 py-3.5"><p>{review.title}</p><p className="mt-0.5 text-xs text-[#61706c]">{review.message}</p></td><td className="px-4 py-3.5"><AdminStars rating={review.rating} /></td><td className="px-4 py-3.5"><AdminBadge status={review.status} /></td><td className="px-4 py-3.5 text-right"><button type="button" className="rounded px-1 py-2 text-[#ff2f68] hover:underline" onClick={() => onView(review)}>View</button></td></tr>)}</tbody></table>{!reviews.length && <p className="py-12 text-center text-sm text-[#667085]">No reviews match this view.</p>}</div>;
+}
