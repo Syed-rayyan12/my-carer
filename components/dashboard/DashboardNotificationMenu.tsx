@@ -1,0 +1,5 @@
+import DashboardNotificationDropdown, { type DashboardNotificationDropdownProps } from "./DashboardNotificationDropdown";
+
+export default function DashboardNotificationMenu({ unreadCount, open, onToggle, ...dropdown }: DashboardNotificationDropdownProps & { unreadCount: number; open: boolean; onToggle: () => void }) {
+  return <div className="relative"><button type="button" className="relative flex size-12 shrink-0 items-center justify-center rounded-full bg-white text-[#5b616d]" aria-label={unreadCount ? `Notifications, ${unreadCount} unread notifications` : "Notifications, no unread notifications"} aria-expanded={open} onClick={onToggle}><img src="/images/notification.png" alt="" />{unreadCount > 0 && <span className="absolute -top-1 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-[#f3f4f6] bg-[#ff2f68] px-1 text-[10px] leading-none font-bold text-white" aria-hidden="true">{unreadCount}</span>}</button>{open && <DashboardNotificationDropdown {...dropdown} />}</div>;
+}

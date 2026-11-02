@@ -1,0 +1,15 @@
+export const caregiverDocumentTypes = ["ID Proof", "DBS Certificate", "Qualification", "Right to Work", "Proof of Address"] as const;
+export type CaregiverDocumentType = typeof caregiverDocumentTypes[number];
+export type CaregiverVerificationDocument = { id: string; type: CaregiverDocumentType; status: "Approved" | "Pending" | "Rejected"; uploaded: string; expiry: string; fileName: string; notes: string; reason?: string; local?: boolean };
+export const initialCaregiverDocuments: CaregiverVerificationDocument[] = [
+  { id: "identity", type: "ID Proof", status: "Approved", uploaded: "2026-09-02", expiry: "", fileName: "identity-proof.pdf", notes: "" },
+  { id: "dbs", type: "DBS Certificate", status: "Approved", uploaded: "2026-09-02", expiry: "2026-10-14", fileName: "enhanced-dbs.pdf", notes: "" },
+  { id: "qualification", type: "Qualification", status: "Approved", uploaded: "2026-09-03", expiry: "", fileName: "NVQ-L3-certificate.pdf", notes: "" },
+  { id: "right-to-work", type: "Right to Work", status: "Pending", uploaded: "", expiry: "", fileName: "", notes: "" },
+  { id: "address", type: "Proof of Address", status: "Rejected", uploaded: "2026-08-28", expiry: "", fileName: "proof-of-address.pdf", notes: "", reason: "The address details are not clearly visible. Please upload a clear, complete copy showing your name and current address." },
+];
+export function isCaregiverDocuments(value: unknown): value is CaregiverVerificationDocument[] { return Array.isArray(value) && value.length === caregiverDocumentTypes.length && new Set(value.map(item => item?.type)).size === caregiverDocumentTypes.length && new Set(value.map(item => item?.id)).size === caregiverDocumentTypes.length && value.every(item => item && typeof item === "object" && ["id", "uploaded", "expiry", "fileName", "notes"].every(key => typeof item[key] === "string") && caregiverDocumentTypes.includes(item.type) && ["Approved", "Pending", "Rejected"].includes(item.status) && (item.reason === undefined || typeof item.reason === "string") && (item.local === undefined || typeof item.local === "boolean")); }
+export function isCaregiverVerified(documents: CaregiverVerificationDocument[]) { return ["ID Proof", "DBS Certificate", "Qualification"].every(type => documents.some(document => document.type === type && document.status === "Approved")); }
+export function documentDate(value: string) { return value ? new Date(`${value}T12:00:00`).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—"; }
+export function validateVerificationFile(file: { type: string; size: number }) { if (!["application/pdf", "image/jpeg", "image/png"].includes(file.type)) return "Choose a PDF, JPG or PNG file."; if (!file.size || file.size > 10 * 1024 * 1024) return "Choose a file up to 10 MB."; return ""; }
+export function replaceVerificationDocument(documents: CaregiverVerificationDocument[], replacement: CaregiverVerificationDocument) { return documents.map(document => document.id === replacement.id ? replacement : document); }

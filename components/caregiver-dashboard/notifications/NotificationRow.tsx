@@ -1,0 +1,6 @@
+import Link from "next/link";
+import { Trash2 } from "lucide-react";
+import type { CaregiverNotification } from "./notificationsData";
+import NotificationIcon from "./NotificationIcon";
+
+export default function NotificationRow({ notification, onRead, onRemove }: { notification: CaregiverNotification; onRead: () => void; onRemove: () => void }) { return <article className={`flex items-center gap-4 border-b border-[#eaecf0] px-6 py-4 last:border-0 max-[600px]:flex-wrap max-[600px]:px-4 ${notification.unread ? "bg-[#fdf8fd]" : "bg-white"}`}><NotificationIcon kind={notification.kind} /><div className="min-w-0 flex-1"><Link href={notification.href} onClick={onRead} className={`text-sm leading-6 hover:text-[#ff2f68] ${notification.unread ? "font-semibold text-[#101828]" : "text-[#475467]"}`}>{notification.title}</Link><p className="text-xs text-[#667085]">{notification.category} · {notification.time}</p></div><div className="ml-auto flex shrink-0 items-center gap-6 max-[600px]:gap-3">{notification.unread && <button type="button" onClick={onRead} className="rounded py-1 text-xs text-[#667085] hover:text-[#ff2f68]">Mark as Read</button>}<button type="button" aria-label={`Remove notification: ${notification.title}`} onClick={onRemove} className="rounded p-1 text-[#98a2b3] hover:text-[#f04438]"><Trash2 size={16} /></button></div></article>; }

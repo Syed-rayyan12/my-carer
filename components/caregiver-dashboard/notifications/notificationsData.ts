@@ -1,0 +1,14 @@
+export type CaregiverNotification = { id: string; title: string; category: "Jobs" | "Messages" | "Verification" | "Reviews"; kind: "verified" | "job" | "message" | "review" | "expiry"; time: string; unread: boolean; href: string };
+export const initialCaregiverNotifications: CaregiverNotification[] = [
+  { id: "profile-verified", title: "Your profile has been verified", category: "Verification", kind: "verified", time: "2 hrs ago", unread: true, href: "/caregiver-dashboard/verification" },
+  { id: "job-match", title: "New care job matches your profile", category: "Jobs", kind: "job", time: "4 hrs ago", unread: true, href: "/caregiver-dashboard/find-care-jobs" },
+  { id: "john-message", title: "John Smith sent you a message", category: "Messages", kind: "message", time: "5 hrs ago", unread: true, href: "/caregiver-dashboard/messages" },
+  { id: "new-review", title: "You received a new review", category: "Reviews", kind: "review", time: "1 day ago", unread: false, href: "/caregiver-dashboard/reviews-ratings" },
+  { id: "dbs-expiry", title: "Your DBS document expires soon", category: "Verification", kind: "expiry", time: "2 days ago", unread: false, href: "/caregiver-dashboard/verification" },
+  { id: "application-shortlisted", title: "David Brown shortlisted your application", category: "Jobs", kind: "job", time: "4 days ago", unread: false, href: "/caregiver-dashboard/my-applications" },
+  { id: "application-accepted", title: "John Smith accepted your application", category: "Jobs", kind: "job", time: "1 week ago", unread: false, href: "/caregiver-dashboard/my-applications" },
+];
+export function isCaregiverNotifications(value: unknown): value is CaregiverNotification[] { return Array.isArray(value) && new Set(value.map(item => item?.id)).size === value.length && value.every(item => item && ["id", "title", "time", "href"].every(key => typeof item[key] === "string") && ["Jobs", "Messages", "Verification", "Reviews"].includes(item.category) && ["verified", "job", "message", "review", "expiry"].includes(item.kind) && typeof item.unread === "boolean" && initialCaregiverNotifications.some(seed => seed.href === item.href)); }
+export function readCaregiverNotifications(items: CaregiverNotification[], id?: string) { return items.map(item => item.unread && (id === undefined || item.id === id) ? { ...item, unread: false } : item); }
+export function removeCaregiverNotification(items: CaregiverNotification[], id: string) { return items.filter(item => item.id !== id); }
+export function filterCaregiverNotifications(items: CaregiverNotification[], tab: string, search: string) { return items.filter(item => (tab === "All" || (tab === "Unread" ? item.unread : item.category === tab)) && `${item.title} ${item.category}`.toLowerCase().includes(search.trim().toLowerCase())); }

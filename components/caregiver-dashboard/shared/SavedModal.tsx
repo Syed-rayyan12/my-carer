@@ -1,0 +1,4 @@
+import { PartyPopper } from "lucide-react";
+import CaregiverModal from "./CaregiverModal";
+
+export default function SavedModal({ onClose, title = "Changes Saved Successfully", message = "Your information has been updated on this device." }: { onClose: () => void; title?: string; message?: string }) { return <CaregiverModal width="small" onClose={onClose}><div className="px-6 pb-6 text-center"><span className="mx-auto -mt-2 mb-5 flex size-14 items-center justify-center rounded-full bg-[#ecfdf3] text-[#039855]"><PartyPopper size={25} /></span><h2 className="font-jakarta text-lg font-bold">{title}</h2><p className="mt-2 mb-6 text-sm leading-6 text-[#667085]">{message}</p><button autoFocus type="button" className="w-full rounded-lg bg-[#ff2f68] px-4 py-2.5 text-sm font-semibold text-white" onClick={onClose}>Done</button></div></CaregiverModal>; }

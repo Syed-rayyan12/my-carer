@@ -1,0 +1,3 @@
+import type { ReactNode } from "react";
+
+export default function CaregiverPage({ title, description, children }: { title: string; description: string; children: ReactNode }) { return <main className="mx-auto max-w-[1530px] px-8 pt-2 pb-5 font-nunito text-[#101828] max-[1250px]:px-6 max-[640px]:px-4"><header className="mb-6 rounded-xl border border-[#d9d9d9] bg-white px-5 py-[18px]"><h1 className="mb-1 font-commissioner text-[42px] font-bold leading-[1.3] tracking-tight text-black max-[640px]:text-[30px]">{title}</h1><p className="text-base text-[#363636]">{description}</p></header>{children}</main>; }

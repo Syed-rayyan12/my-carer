@@ -1,15 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, Menu, Search } from "lucide-react";
+import { ChevronDown, Menu, Search, Star } from "lucide-react";
 import { activity } from "./dashboardData";
 import { useDashboard } from "./DashboardContext";
 import ProfileLogoutDropdown from "./ProfileLogoutDropdown";
+import DashboardNotificationMenu from "./DashboardNotificationMenu";
 
 export default function DashboardHeader() {
   const { search, setSearch, setMobileMenu } = useDashboard();
   const [dropdown, setDropdown] = useState<"notifications" | "profile" | null>(null);
   const [read, setRead] = useState(false);
+  const [removedNotifications, setRemovedNotifications] = useState<string[]>([]);
+  const notificationItems = [...activity.map((item, index) => ({ id: item.text, text: item.text, time: item.time, icon: item.icon, unread: !read && index < 3, tone: (["blue", "pink", "pink", "green"] as const)[index % 4] })), { id: "recent-review", text: "You received a new review", time: "2 days ago", icon: Star, unread: false, tone: "amber" as const }].filter(item => !removedNotifications.includes(item.id));
+  const unreadCount = notificationItems.filter(item => item.unread).length;
   const headerRef = useRef<HTMLElement>(null);
   const profileTriggerRef = useRef<HTMLButtonElement>(null);
 
@@ -31,33 +35,12 @@ export default function DashboardHeader() {
         </label>
       </div>
       <div className="flex items-center gap-6 max-w-[300px] max-[1050px]:gap-4 max-[440px]:gap-2">
-        <div className="relative">
-          <button className="relative flex size-12 shrink-0 items-center justify-center rounded-full bg-white text-[#5b616d]" aria-label={read ? "Notifications, no unread notifications" : "Notifications, 3 unread notifications"} aria-expanded={dropdown === "notifications"} onClick={() => setDropdown(dropdown === "notifications" ? null : "notifications")}>
-            <img src="/images/notification.png" alt="" />
-            {!read && <span className="absolute -top-1 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-[#f3f4f6] bg-[#ff2f68] px-1 text-[10px] leading-none font-bold text-white" aria-hidden="true">3</span>}
-          </button>
-          {dropdown === "notifications" && (
-            <div className="absolute top-full right-0 z-50 mt-2 w-[350px] rounded-xl  bg-white   shadow-xl max-[640px]:fixed max-[640px]:top-[70px] max-[640px]:right-3 max-[640px]:mt-0 max-[640px]:w-[calc(100vw-24px)] max-[640px]:max-w-[350px]">
-              <div className="flex items-center justify-between p-5 pb-4"><strong className="font-bold text-[18px] font-Commissioner">Notifications</strong><button className="text-[12px] text-[#fff] px-5 py-2 rounded-md bg-[#FF2F68]" onClick={() => setRead(true)}>Mark all as read</button></div>
-              {activity.slice(0, 3).map(({ text, time, icon: Icon }) => <div className="flex gap-3 border-t border-[#ececf0] px-3.5 py-3" key={text}>
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#f3f4f6] text-[#ff2f68]">
-
-                <Icon size={18} className="shrink-0 text-[#FF2F68] bg-[#F3F4F6] rounded-full " />
-                </span>
-                <div className="flex flex-col gap-1 border-b border-[#ececf0] pb-3 last:border-b-0 last:pb-0">
-                  <p className="text-[12px] font-nunito font-normal">{text}</p>
-                  <small className="text-[10px] text-[#717171]">{time}</small>
-                </div>
-              </div>
-              )}
-            </div>
-          )}
-        </div>
+        <DashboardNotificationMenu open={dropdown === "notifications"} onToggle={() => setDropdown(dropdown === "notifications" ? null : "notifications")} unreadCount={unreadCount} items={notificationItems} onRemove={id => setRemovedNotifications(current => [...current, id])} markAllDisabled={!unreadCount} onMarkAllRead={() => setRead(true)} />
         <div className="h-10 w-px bg-[#D8D8D8] max-[850px]:hidden" />
         <div className="relative">
           <button ref={profileTriggerRef} type="button" className="flex items-center gap-2.5" aria-expanded={dropdown === "profile"} aria-haspopup="dialog" aria-controls={dropdown === "profile" ? "profile-logout-dropdown" : undefined} onClick={() => setDropdown(dropdown === "profile" ? null : "profile")}>
             <span className="flex size-12 items-center font-bebas justify-center rounded-full bg-[#ff2f68] text-[28px] font-normal text-[#fff] max-[640px]:size-9 max-[640px]:text-[11px]">JW</span>
-            <span className="text-left max-[850px]:hidden"><strong className="block text-[16px] font-nunito font-bold text-[#000]">James Wilson</strong><small className="block text-[13px] font-nunito text-[#000]">Care seeker</small></span>
+            <span className="text-left max-[850px]:hidden"><strong className="block text-[16px] font-nunito font-medium text-black">James Wilson</strong><small className="block text-[13px] font-nunito text-[#000]">Care seeker</small></span>
             <ChevronDown size={16} className="text-[#ff2f68]" />
           </button>
           {dropdown === "profile" && (
