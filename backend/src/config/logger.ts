@@ -2,7 +2,8 @@ import pino from 'pino';
 import { env } from './env.js';
 
 const scrub = (value: string) =>
-  value.replaceAll(env.DATABASE_URL, '[REDACTED_DATABASE_URL]')
+  value
+    .replaceAll(env.DATABASE_URL, '[REDACTED_DATABASE_URL]')
     .replace(/(postgres(?:ql)?:\/\/)[^\s@]+@/gi, '$1[REDACTED]@');
 
 export const logger = pino({
@@ -24,7 +25,13 @@ export const logger = pino({
     censor: '[REDACTED]',
   },
   serializers: {
-    err: (error: Error) => {
+    err: (error: unknown) => {
+      if (!(error instanceof Error)) {
+        return {
+          type: typeof error,
+          message: scrub(typeof error === 'string' ? error : 'Non-Error value thrown'),
+        };
+      }
       const serialized = pino.stdSerializers.err(error);
       return {
         ...serialized,
@@ -34,6 +41,11 @@ export const logger = pino({
     },
   },
   ...(env.NODE_ENV === 'development'
-    ? { transport: { target: 'pino-pretty', options: { colorize: true, translateTime: 'SYS:standard' } } }
+    ? {
+        transport: {
+          target: 'pino-pretty',
+          options: { colorize: true, translateTime: 'SYS:standard' },
+        },
+      }
     : {}),
 });

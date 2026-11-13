@@ -10,12 +10,15 @@ router.get('/health', (_req, res) => {
   res.json({ status: 'ok', uptime: process.uptime() });
 });
 
-router.get('/health/ready', asyncHandler(async (_req, res) => {
-  try {
-    await checkDatabase();
-  } catch (error) {
-    logger.error({ err: error }, 'Database readiness check failed');
-    throw new ApiError(503, 'Database unavailable');
-  }
-  res.json({ status: 'ok' });
-}));
+router.get(
+  '/health/ready',
+  asyncHandler(async (_req, res) => {
+    try {
+      await checkDatabase();
+    } catch (error) {
+      logger.error({ err: error }, 'Database readiness check failed');
+      throw new ApiError(503, 'Database unavailable');
+    }
+    res.json({ status: 'ok' });
+  }),
+);

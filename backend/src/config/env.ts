@@ -12,17 +12,22 @@ const envSchema = z
     DATABASE_URL: z.url().refine((value) => /^postgres(?:ql)?:\/\//.test(value), {
       message: 'Must be a PostgreSQL connection URL',
     }),
-    CORS_ORIGIN: z.string().min(1).refine(
-      (value) => value === '*' || value.split(',').every((origin) => {
-        try {
-          const url = new URL(origin.trim());
-          return ['http:', 'https:'].includes(url.protocol) && url.origin === origin.trim();
-        } catch {
-          return false;
-        }
-      }),
-      { message: 'Use * or comma-separated HTTP(S) origins without trailing slashes' },
-    ),
+    CORS_ORIGIN: z
+      .string()
+      .min(1)
+      .refine(
+        (value) =>
+          value === '*' ||
+          value.split(',').every((origin) => {
+            try {
+              const url = new URL(origin.trim());
+              return ['http:', 'https:'].includes(url.protocol) && url.origin === origin.trim();
+            } catch {
+              return false;
+            }
+          }),
+        { message: 'Use * or comma-separated HTTP(S) origins without trailing slashes' },
+      ),
     LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']),
     RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().max(2147483647),
     RATE_LIMIT_MAX: z.coerce.number().int().positive(),

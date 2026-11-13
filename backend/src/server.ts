@@ -24,7 +24,7 @@ const shutdown = async (reason: string, code: number): Promise<void> => {
   try {
     if (server.listening) {
       await new Promise<void>((resolve, reject) => {
-        server.close((error) => error ? reject(error) : resolve());
+        server.close((error) => (error ? reject(error) : resolve()));
       });
     }
   } catch (error) {
@@ -42,8 +42,12 @@ const shutdown = async (reason: string, code: number): Promise<void> => {
   logger.flush(() => process.exit(exitCode));
 };
 
-process.on('SIGINT', () => { void shutdown('SIGINT', 0); });
-process.on('SIGTERM', () => { void shutdown('SIGTERM', 0); });
+process.on('SIGINT', () => {
+  void shutdown('SIGINT', 0);
+});
+process.on('SIGTERM', () => {
+  void shutdown('SIGTERM', 0);
+});
 process.on('unhandledRejection', (error) => {
   logger.fatal({ err: error }, 'Unhandled rejection');
   void shutdown('unhandledRejection', 1);

@@ -36,6 +36,8 @@ The API listens on port 4000 by default:
 
 The server verifies database connectivity before opening its HTTP port. `app.ts` can be imported independently without listening or connecting. Readiness uses the infrastructure helper in `config/db.ts`; future business queries belong exclusively in repositories.
 
+Compose needs host port 5432 to be free. If you already run PostgreSQL on that port, set `DATABASE_URL` to valid credentials for that instance instead, or stop that instance before starting Compose. The setup does not modify existing PostgreSQL users or databases.
+
 No migration is needed for this empty schema. After setting `DATABASE_URL` and later adding your first model, the exact command to create and apply the first development migration is:
 
 ```sh
@@ -126,3 +128,9 @@ The flow is route → controller → service → repository → PostgreSQL. Rout
 - [Prisma 7 setup and adapter requirements](https://www.prisma.io/docs/orm/v7)
 - [Prisma client generator configuration](https://www.prisma.io/docs/orm/v7/prisma-schema/overview/generators)
 - [PostgreSQL official Docker image and volume layout](https://hub.docker.com/_/postgres)
+
+## Initial verification
+
+Verified on the available Node 24.10.0 runtime with TypeScript 6.0.3 and Prisma 7.10.1: client generation, source type-checking, ESLint, four health tests, production compilation, and Prettier all passed. The project targets Node 26 LTS; verification on that deployment runtime remains necessary. Invalid environment input exited with code 1 and a readable field error.
+
+Docker was unavailable on the setup machine. An existing PostgreSQL instance on localhost:5432 rejected the public example credentials. The server logged the startup failure, disconnected, and exited with code 1 without listening. A successful live database connection and graceful shutdown with active requests were not verified. No migrations were run.
