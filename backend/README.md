@@ -69,3 +69,15 @@ The project targets Node 26 LTS; the available development machine currently run
 ## Feature module and page API guide
 
 See [backend-structure.md](docs/backend-structure.md) for feature ownership, the route/controller/service/repository structure, page-specific endpoints and test commands.
+
+## Railway backend deployment
+
+Set the backend service root directory to `/backend` and provide the runtime variables listed in `.env.example` through Railway Variables, including `DATABASE_URL` and the exact frontend `CORS_ORIGIN`.
+
+- Build command: `npm run build` (generates the Prisma client, then compiles TypeScript).
+- Pre-deploy command: `npm run db:deploy` (applies committed migrations before the new backend starts).
+- Start command: `npm run start`.
+
+Keep Prisma CLI available in the deployment image for the pre-deploy command. Do not enable dependency pruning that removes it without moving Prisma to production dependencies.
+
+Prisma generation only needs the schema and does not connect to the database. Database migration requires the database service to be running and reachable; Railway pre-deploy commands can reach its private network. Do not use `prisma migrate dev` or reset commands against the deployed database.
