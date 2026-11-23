@@ -1,4 +1,4 @@
-import MessagesPage from "@/components/dashboard/messages/MessagesPage";
+﻿import MessagesPage from "@/components/dashboard/messages/MessagesPage";
 
 export const metadata = { title: "Messages | My Carer" };
 

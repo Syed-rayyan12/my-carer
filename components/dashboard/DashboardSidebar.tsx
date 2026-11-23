@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import {useLiveWorkspace} from '@/components/platform/LiveWorkspace';
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -9,6 +10,7 @@ import { useDashboard } from "./DashboardContext";
 export default function DashboardSidebar() {
   const { mobileMenu, setMobileMenu, saved, showPanel } = useDashboard();
   const pathname = usePathname();
+  const {snapshot}=useLiveWorkspace();const organisation=["CARE_HOME","CARE_AGENCY"].includes(snapshot.membership?.plan?.category??"");
   function isActive(href: string) {
     return pathname === href || (href === "/care-seeker-dashboard" && pathname === "/dashboard") || ((href === "/care-seeker-dashboard/care-requirements" || href === "/care-seeker-dashboard/my-requests") && pathname.startsWith(`${href}/`));
   }
@@ -30,8 +32,8 @@ export default function DashboardSidebar() {
     <aside className={`fixed top-[18px] bottom-[18px] left-[18px] z-40 flex w-[242px] flex-col overflow-y-auto rounded-[20px] border border-[#ececf0] bg-white px-[18px] py-[22px] max-[1250px]:w-[215px] max-[1250px]:px-3 max-[850px]:w-[205px] max-[640px]:top-3 max-[640px]:bottom-3 max-[640px]:left-3 max-[640px]:w-[242px] max-[640px]:rounded-2xl max-[640px]:transition-transform max-[640px]:duration-200 ${mobileMenu ? "max-[640px]:translate-x-0" : "max-[640px]:-translate-x-[calc(100%+12px)]"}`}>
       <Link href="/" className="mb-8 flex justify-center"><Image className="h-[76px] w-[118px] object-contain" src="/logo.png" alt="My Carer" width={122} height={79} priority /></Link>
     
-      <nav className="flex flex-col gap-2" aria-label="Dashboard navigation">
-        {nav.map(({ label, icon: Icon, href }, index) => href ? (
+      <div className="px-3 pb-2"><Link href="/care-seeker-dashboard/membership" className="text-sm text-[#ff2f68]">Membership</Link></div><nav className="flex flex-col gap-2" aria-label="Dashboard navigation"><Link href="/care-seeker-dashboard/notifications" className="flex items-center gap-3 rounded-lg px-3.5 py-3 text-sm text-black hover:bg-pink-50">Notifications</Link>
+        {(organisation?[{label:"Organisation Profile",icon:UserRound,href:"/care-seeker-dashboard/organisation"},{label:"Jobs & Applicants",icon:ClipboardList,href:"/care-seeker-dashboard/care-requirements"},{label:"My Profile",icon:UserRound,href:"/care-seeker-dashboard/my-profile"},{label:"Messages",icon:MessageSquare,href:"/care-seeker-dashboard/messages"},{label:"Settings",icon:Settings,href:"/care-seeker-dashboard/settings"}]:nav).map(({ label, icon: Icon, href }, index) => href ? (
           <Link className={`flex w-full items-center gap-3 rounded-lg px-3.5 py-3 font-nunito text-[13px] font-medium ${isActive(href) ? "bg-[#ff2f68] text-white" : "text-black hover:bg-[#fff5f8] hover:text-[#ff2f68]"}`} key={label} href={href} aria-current={isActive(href) ? "page" : undefined} onClick={() => setMobileMenu(false)}><Icon size={19} />{label}</Link>
         ) : (
           <button className={`flex w-full items-center gap-3 rounded-lg px-3.5 py-3 text-left text-xs font-semibold font-nunito  ${index === 0 ? "bg-[#FF2F68] text-[#fff]  font-nunito font-medium text-[13px]" : "text-[#000] font-nunito font-medium text-[13px]"}`} key={label} aria-current={index === 0 ? "page" : undefined} onClick={() => index === 0 ? setMobileMenu(false) : showPanel(label)}>

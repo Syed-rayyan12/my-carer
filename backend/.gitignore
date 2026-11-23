@@ -9,3 +9,5 @@ logs/
 .DS_Store
 src/generated/
 *.tsbuildinfo
+.test-postgres-path
+storage/

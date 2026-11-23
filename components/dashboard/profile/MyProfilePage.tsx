@@ -5,7 +5,7 @@ import ProfileForm from "./ProfileForm";
 import ProfileProgress from "./ProfileProgress";
 
 export default function MyProfilePage() {
-  const [completion, setCompletion] = useState(85);
+  const [completion, setCompletion] = useState(0);
 
   return (
     <main className="mx-auto flex max-w-[1530px] flex-col gap-6 px-8 pt-2 pb-4 max-[1250px]:px-6 max-[640px]:px-4">

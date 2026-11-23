@@ -1,0 +1,90 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CARE_SEEKER
+  CAREGIVER
+  ADMIN
+}
+
+enum AccountStatus {
+  PENDING
+  ACTIVE
+  REJECTED
+  SUSPENDED
+}
+
+model User {
+  id                  String @id @default(uuid()) @db.Uuid
+  firstName           String @db.VarChar(80)
+  lastName            String @db.VarChar(80)
+  email               String @unique @db.VarChar(254)
+  passwordHash        String
+  role                Role
+  status              AccountStatus @default(PENDING)
+  termsAcceptedAt     DateTime @default(now())
+  termsVersion        String @default("2026-11")
+  failedLoginAttempts Int @default(0)
+  lockedUntil         DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  profile             CareSeekerProfile?
+  sessions            Session[]
+  statusHistory       AccountStatusHistory[] @relation("Subject")
+  decisions           AccountStatusHistory[] @relation("Actor")
+
+  @@index([role, status, createdAt])
+}
+
+model CareSeekerProfile {
+  userId         String @id @db.Uuid
+  user           User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contactEmail   String? @db.VarChar(254)
+  phone          String @default("") @db.VarChar(30)
+  dateOfBirth    DateTime? @db.Date
+  location       String @default("") @db.VarChar(120)
+  address        String @default("") @db.VarChar(300)
+  postcode       String @default("") @db.VarChar(12)
+  about          String @default("") @db.VarChar(2000)
+  emergencyName  String @default("") @db.VarChar(160)
+  relationship   String @default("") @db.VarChar(80)
+  emergencyPhone String @default("") @db.VarChar(30)
+  language       String @default("English (UK)") @db.VarChar(30)
+  updatedAt      DateTime @updatedAt
+}
+
+model Session {
+  id           String @id @default(uuid()) @db.Uuid
+  userId       String @db.Uuid
+  user         User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash    String @unique @db.Char(64)
+  expiresAt    DateTime
+  lastSeenAt   DateTime @default(now())
+  revokedAt    DateTime?
+  createdAt    DateTime @default(now())
+
+  @@index([userId, revokedAt])
+  @@index([expiresAt])
+}
+
+model AccountStatusHistory {
+  id         String @id @default(uuid()) @db.Uuid
+  userId     String @db.Uuid
+  user       User @relation("Subject", fields: [userId], references: [id], onDelete: Cascade)
+  actorId    String @db.Uuid
+  actor      User @relation("Actor", fields: [actorId], references: [id], onDelete: Restrict)
+  fromStatus AccountStatus
+  toStatus   AccountStatus
+  reason     String? @db.VarChar(1000)
+  createdAt  DateTime @default(now())
+
+  @@index([userId, createdAt])
+}

@@ -1,4 +1,4 @@
-import SettingsPage from "@/components/dashboard/settings/SettingsPage";
+﻿import SettingsPage from "@/components/dashboard/settings/SettingsPage";
 
 export const metadata = { title: "Settings | My Carer" };
 

@@ -9,6 +9,9 @@ export const prisma =
   new PrismaClient({
     adapter: new PrismaPg({
       connectionString: env.DATABASE_URL,
+      application_name: 'my-carer-api',
+      max: env.DATABASE_POOL_MAX,
+      idleTimeoutMillis: 10000,
       connectionTimeoutMillis: 3000,
       query_timeout: 3000,
       statement_timeout: 3000,

@@ -1,9 +1,10 @@
 import type { AdminData, AdminUser } from "../adminData";
+import { isCarePriority, type CarePriority } from "../shared/careUrgencyData";
 
 export type CareSeekerConnection = { caregiverId: string; since: string; status: "Active" | "Shortlisted" };
 export type AdminCareSeeker = AdminUser & {
   type: "Care Seeker"; phone: string; joinedAt: string; avatarTone: "pink" | "dark";
-  requirement: { description: string; careType: string; schedule: string; budget: string };
+  requirement: { priority?: CarePriority; description: string; careType: string; schedule: string; budget: string };
   connections: CareSeekerConnection[];
   suspendedFrom?: Exclude<AdminUser["status"], "Suspended">;
 };
@@ -24,7 +25,7 @@ export const initialAdminCareSeekers: AdminCareSeeker[] = [
 ];
 
 export function isAdminCareSeekerList(value: unknown): value is AdminCareSeeker[] {
-  return Array.isArray(value) && value.every(person => person && typeof person === "object" && ["id", "name", "initials", "date", "email", "location", "phone", "joinedAt"].every(key => typeof person[key] === "string") && person.type === "Care Seeker" && ["Pending", "Active", "Rejected", "Suspended"].includes(person.status) && ["pink", "dark"].includes(person.avatarTone) && (person.rejectionReason === undefined || typeof person.rejectionReason === "string") && (person.suspendedFrom === undefined || ["Pending", "Active", "Rejected"].includes(person.suspendedFrom)) && person.requirement && typeof person.requirement === "object" && ["description", "careType", "schedule", "budget"].every(key => typeof person.requirement[key] === "string") && Array.isArray(person.connections) && person.connections.every((connection: Record<string, unknown>) => connection && typeof connection.caregiverId === "string" && typeof connection.since === "string" && ["Active", "Shortlisted"].includes(String(connection.status))));
+  return Array.isArray(value) && value.every(person => person && typeof person === "object" && ["id", "name", "initials", "date", "email", "location", "phone", "joinedAt"].every(key => typeof person[key] === "string") && person.type === "Care Seeker" && ["Pending", "Active", "Rejected", "Suspended"].includes(person.status) && ["pink", "dark"].includes(person.avatarTone) && (person.rejectionReason === undefined || typeof person.rejectionReason === "string") && (person.suspendedFrom === undefined || ["Pending", "Active", "Rejected"].includes(person.suspendedFrom)) && person.requirement && typeof person.requirement === "object" && (person.requirement.priority === undefined || isCarePriority(person.requirement.priority)) && ["description", "careType", "schedule", "budget"].every(key => typeof person.requirement[key] === "string") && Array.isArray(person.connections) && person.connections.every((connection: Record<string, unknown>) => connection && typeof connection.caregiverId === "string" && typeof connection.since === "string" && ["Active", "Shortlisted"].includes(String(connection.status))));
 }
 
 export function getAdminCareSeekers(data: AdminData): AdminCareSeeker[] {

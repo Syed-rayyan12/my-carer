@@ -3,19 +3,21 @@
 import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Filter, Search, UsersRound } from "lucide-react";
+import CaregiverMessageModal from "./CaregiverMessageModal";
 import CaregiverProfileModal, { demoCaregiverProfile } from "@/components/website/CaregiverProfileModal";
 import { useDashboard } from "../DashboardContext";
 import CaregiverFilters from "./CaregiverFilters";
 import CaregiverResultCard from "./CaregiverResultCard";
-import { defaultCaregiverFilters, directoryCaregivers, filterCaregivers, type DirectoryCaregiver } from "./caregiverDirectoryData";
+import { defaultCaregiverFilters, filterCaregivers, type DirectoryCaregiver } from "./caregiverDirectoryData";
 import { directoryCaregiverProfile } from "./directoryCaregiverProfile";
 import DashboardPageHeader from "../DashboardPageHeader";
 
 export default function FindCaregiversPage() {
-  const { saved, toggleSaved } = useDashboard();
+  const { saved, toggleSaved, setCaregiverSaved, caregivers: directoryCaregivers } = useDashboard();
   const [query, setQuery] = useState("");
   const [filters, setFilters] = useState(defaultCaregiverFilters);
   const [filtersVisible, setFiltersVisible] = useState(true);
+  const [messageRecipient,setMessageRecipient]=useState<DirectoryCaregiver|null>(null);
   const [selected, setSelected] = useState<DirectoryCaregiver | null>(null);
   const reduceMotion = useReducedMotion();
   const results = filterCaregivers(directoryCaregivers, query, filters);
@@ -45,7 +47,7 @@ export default function FindCaregiversPage() {
                   transition={{ layout: { type: "spring", stiffness: 350, damping: 32 } }}
                   className="h-full min-w-0"
                 >
-                  <CaregiverResultCard caregiver={caregiver} saved={saved.includes(caregiver.name)} onViewProfile={() => setSelected(caregiver)} onToggleSave={() => toggleSaved(caregiver.name)} />
+                  <CaregiverResultCard caregiver={caregiver} saved={saved.includes(caregiver.id)} onViewProfile={() => setSelected(caregiver)} onToggleSave={() => toggleSaved(caregiver.id)} />
                 </motion.div>
               ))}
               {results.length === 0 && <motion.div key="empty-results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduceMotion ? 0 : 0.15 }} className="col-span-full rounded-2xl border border-[#e5e2dc] bg-white px-6 py-12 text-center"><UsersRound size={35} className="mx-auto mb-4 text-[#ff2f68]" /><h3 className="font-jakarta text-lg font-semibold text-[#202925]">No caregivers match your search</h3><p className="mt-2 font-nunito text-sm text-[#667085]">Try a different name or change your filters.</p><button type="button" className="mt-5 rounded-lg bg-[#ff2f68] px-5 py-2.5 font-nunito text-sm text-white" onClick={() => { resetFilters(); setQuery(""); }}>Clear search and filters</button></motion.div>}
@@ -53,7 +55,8 @@ export default function FindCaregiversPage() {
           </motion.div>
         </section>
       </div>
-      <CaregiverProfileModal open={selected !== null} onClose={() => setSelected(null)} profile={selected ? directoryCaregiverProfile(selected) : demoCaregiverProfile} saved={selected ? saved.includes(selected.name) : false} onFavouriteChange={(isSaved, profile) => { if (saved.includes(profile.name) !== isSaved) toggleSaved(profile.name); }} />
+      <CaregiverProfileModal onContact={() => { if (selected) {setMessageRecipient(selected);setSelected(null);} }} open={selected !== null} onClose={() => setSelected(null)} profile={selected ? directoryCaregiverProfile(selected) : demoCaregiverProfile} saved={selected ? saved.includes(selected.id) : false} onFavouriteChange={(isSaved, profile) => { if (profile.id) void setCaregiverSaved(profile.id, isSaved); }} />
+      <CaregiverMessageModal caregiver={messageRecipient} onClose={()=>setMessageRecipient(null)} />
     </main>
   );
 }

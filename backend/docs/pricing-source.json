@@ -1,0 +1,414 @@
+﻿[
+    {
+        "rows":  [
+                     [
+                         "",
+                         "Free",
+                         "Verified",
+                         "Pro"
+                     ],
+                     [
+                         "Price / month",
+                         "£0 / mo",
+                         "£9.99 / mo",
+                         "£19.99 / mo"
+                     ],
+                     [
+                         "Free trial",
+                         "Always free",
+                         "6 months free",
+                         "6 months free"
+                     ],
+                     [
+                         "PROFILE \u0026 VISIBILITY"
+                     ],
+                     [
+                         "Basic profile listing",
+                         "✓",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Postcode searchable",
+                         "✓",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Profile photo \u0026 bio",
+                         "—",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Specialisms listed",
+                         "1",
+                         "Up to 5",
+                         "Unlimited"
+                     ],
+                     [
+                         "Qualifications \u0026 certificates",
+                         "—",
+                         "—",
+                         "✓"
+                     ],
+                     [
+                         "Availability calendar",
+                         "—",
+                         "—",
+                         "✓"
+                     ],
+                     [
+                         "Featured / top placement",
+                         "—",
+                         "—",
+                         "✓"
+                     ],
+                     [
+                         "TRUST \u0026 VERIFICATION"
+                     ],
+                     [
+                         "DBS verified badge",
+                         "—",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Right to work verified",
+                         "—",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Collect \u0026 display reviews",
+                         "Display only",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Respond to reviews",
+                         "—",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "COMMUNICATION \u0026 LEADS"
+                     ],
+                     [
+                         "Direct message from families",
+                         "—",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Job alerts (agency roles)",
+                         "—",
+                         "—",
+                         "✓"
+                     ],
+                     [
+                         "Profile analytics dashboard",
+                         "—",
+                         "—",
+                         "✓"
+                     ],
+                     [
+                         "Customer support",
+                         "Email only",
+                         "Email \u0026 chat",
+                         "Priority"
+                     ]
+                 ]
+    },
+    {
+        "rows":  [
+                     [
+                         "",
+                         "Basic",
+                         "Enhanced",
+                         "Premium"
+                     ],
+                     [
+                         "Price / month",
+                         "£0 / mo",
+                         "£79 / mo",
+                         "£149 / mo"
+                     ],
+                     [
+                         "Free trial",
+                         "CQC pre-loaded",
+                         "6 months free",
+                         "6 months free"
+                     ],
+                     [
+                         "LISTING \u0026 PROFILE"
+                     ],
+                     [
+                         "CQC data \u0026 rating displayed",
+                         "✓",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Address, phone \u0026 contact info",
+                         "✓",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Photo gallery",
+                         "—",
+                         "Up to 20",
+                         "Unlimited"
+                     ],
+                     [
+                         "Virtual tour embed",
+                         "—",
+                         "—",
+                         "✓"
+                     ],
+                     [
+                         "Services \u0026 specialisms detail",
+                         "—",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Fee range displayed",
+                         "—",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Top search placement",
+                         "—",
+                         "—",
+                         "✓"
+                     ],
+                     [
+                         "REVIEWS \u0026 TRUST"
+                     ],
+                     [
+                         "Display existing reviews",
+                         "✓",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Invite families to review",
+                         "—",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Respond to reviews publicly",
+                         "—",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Flag \u0026 dispute reviews",
+                         "—",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "VACANCIES \u0026 LEADS"
+                     ],
+                     [
+                         "Job vacancy posts",
+                         "—",
+                         "Up to 3",
+                         "Unlimited"
+                     ],
+                     [
+                         "Enquiry lead notifications",
+                         "—",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Enquiry \u0026 listing analytics",
+                         "—",
+                         "Basic",
+                         "Full + monthly report"
+                     ],
+                     [
+                         "Account management",
+                         "—",
+                         "Email support",
+                         "Dedicated manager"
+                     ]
+                 ]
+    },
+    {
+        "rows":  [
+                     [
+                         "",
+                         "Starter",
+                         "Growth",
+                         "Growth+",
+                         "Enterprise"
+                     ],
+                     [
+                         "Price / month",
+                         "£49 / mo",
+                         "£129 / mo",
+                         "£129 / mo",
+                         "£249 / mo"
+                     ],
+                     [
+                         "Free trial",
+                         "6 months free",
+                         "6 months free",
+                         "6 months free",
+                         "6 months free"
+                     ],
+                     [
+                         "AGENCY PROFILE"
+                     ],
+                     [
+                         "Agency profile page",
+                         "✓",
+                         "✓",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Coverage area map",
+                         "✓",
+                         "✓",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "CQC rating displayed",
+                         "✓",
+                         "✓",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Photo gallery \u0026 team section",
+                         "—",
+                         "✓",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Featured agency badge",
+                         "—",
+                         "✓",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Homepage carousel placement",
+                         "—",
+                         "✓",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Top-of-search placement",
+                         "—",
+                         "—",
+                         "—",
+                         "✓"
+                     ],
+                     [
+                         "Multi-branch management",
+                         "—",
+                         "—",
+                         "—",
+                         "✓"
+                     ],
+                     [
+                         "JOBS \u0026 RECRUITMENT"
+                     ],
+                     [
+                         "Job postings",
+                         "Up to 3",
+                         "Up to 10",
+                         "Up to 10",
+                         "Unlimited"
+                     ],
+                     [
+                         "Candidate shortlisting tool",
+                         "—",
+                         "✓",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Filter applicants by DBS \u0026 quals",
+                         "—",
+                         "✓",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "ATS / CRM integration",
+                         "—",
+                         "—",
+                         "—",
+                         "✓"
+                     ],
+                     [
+                         "API access",
+                         "—",
+                         "—",
+                         "—",
+                         "✓"
+                     ],
+                     [
+                         "REVIEWS \u0026 REPUTATION"
+                     ],
+                     [
+                         "Collect \u0026 display reviews",
+                         "✓",
+                         "✓",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Respond to reviews publicly",
+                         "✓",
+                         "✓",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Flag \u0026 dispute reviews",
+                         "✓",
+                         "✓",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "ANALYTICS \u0026 SUPPORT"
+                     ],
+                     [
+                         "Enquiry lead dashboard",
+                         "Basic",
+                         "✓",
+                         "✓",
+                         "✓"
+                     ],
+                     [
+                         "Monthly performance report",
+                         "—",
+                         "—",
+                         "—",
+                         "✓"
+                     ],
+                     [
+                         "Account management",
+                         "Email only",
+                         "Email \u0026 chat",
+                         "Email \u0026 chat",
+                         "Dedicated manager"
+                     ]
+                 ]
+    }
+]

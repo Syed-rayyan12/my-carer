@@ -8,3 +8,282 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum Role {
+  CARE_SEEKER
+  CAREGIVER
+  ADMIN
+}
+
+enum AccountStatus {
+  PENDING
+  ACTIVE
+  REJECTED
+  SUSPENDED
+}
+
+enum AccountCategory {
+  CAREGIVER
+  CARE_SEEKER
+  CARE_AGENCY
+  LOCAL_AUTHORITY
+  CARE_HOME
+}
+
+model User {
+  id                  String @id @default(uuid()) @db.Uuid
+  firstName           String @db.VarChar(80)
+  lastName            String @db.VarChar(80)
+  email               String @unique @db.VarChar(254)
+  passwordHash        String
+  role                Role
+  accountCategory     AccountCategory?
+  status              AccountStatus @default(PENDING)
+  termsAcceptedAt     DateTime @default(now())
+  termsVersion        String @default("2026-11")
+  failedLoginAttempts Int @default(0)
+  lockedUntil         DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  profile             CareSeekerProfile?
+  sessions            Session[]
+  statusHistory       AccountStatusHistory[] @relation("Subject")
+  decisions           AccountStatusHistory[] @relation("Actor")
+  organisation        OrganisationProfile?
+  membership          Membership?
+  professional        ProfessionalProfile?
+  requests            CareRequest[]
+  applications        Application[]
+  sentMessages        Message[] @relation("Sender")
+  receivedMessages    Message[] @relation("Recipient")
+  saved               SavedCaregiver[] @relation("Saver")
+  savedBy             SavedCaregiver[] @relation("Saved")
+  reviewsWritten      Review[] @relation("Reviewer")
+  reviewsReceived     Review[] @relation("Reviewed")
+  verifications       Verification[]
+  notificationStates  NotificationState[]
+
+  @@index([role, status, createdAt])
+}
+
+model NotificationState {
+  userId String @db.Uuid
+  eventId String @db.VarChar(200)
+  read Boolean @default(false)
+  dismissed Boolean @default(false)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@id([userId, eventId])
+}
+
+model BlogPost {
+  id String @id @db.VarChar(100)
+  title String @db.VarChar(200)
+  description String @db.VarChar(1000)
+  content String
+  category String @db.VarChar(100)
+  author String @db.VarChar(160)
+  date String @db.VarChar(40)
+  status String @default("Draft") @db.VarChar(20)
+  image String @default("")
+  seoTitle String @default("") @db.VarChar(200)
+  metaDescription String @default("") @db.VarChar(1000)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([status, createdAt])
+}
+
+model Membership {
+  billingInterval String @default("monthly") @db.VarChar(10)
+  trialStartedAt DateTime?
+  trialEndsAt DateTime?
+  planId String @default("FAMILY_FREE") @db.VarChar(40)
+  plan PricingPlan @relation(fields: [planId], references: [id], onDelete: Restrict)
+  pricePence Int @default(0)
+  userId String @id @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status String @default("PENDING")
+  paidThrough DateTime?
+  paymentReference String? @unique
+  updatedAt DateTime @updatedAt
+}
+
+model PricingPlan {
+  id String @id @db.VarChar(40)
+  category String @default("CARE_SEEKER") @db.VarChar(40)
+  tier String @default("") @db.VarChar(40)
+  annualPricePence Int @default(0)
+  trialMonths Int @default(0)
+  featureRows Json @default("[]")
+  entitlements Json @default("{}")
+  title String @db.VarChar(80)
+  subtitle String @db.VarChar(200)
+  pricePence Int
+  currency String @default("GBP") @db.VarChar(3)
+  interval String @default("month") @db.VarChar(20)
+  defaultRole Role
+  features Json
+  displayOrder Int @default(0)
+  active Boolean @default(true)
+  memberships Membership[]
+}
+
+model ProfessionalProfile {
+  details Json @default("{}")
+  userId String @id @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio String @default("") @db.VarChar(2000)
+  location String @default("") @db.VarChar(120)
+  qualifications String @default("") @db.VarChar(2000)
+  experience String @default("") @db.VarChar(2000)
+  hourlyRatePence Int @default(0)
+  travelRadiusMiles Int @default(0)
+  services String @default("") @db.VarChar(2000)
+  availability String @default("") @db.VarChar(2000)
+  references String @default("") @db.VarChar(2000)
+  updatedAt DateTime @updatedAt
+}
+
+model CareRequest {
+  details Json @default("{}")
+  id String @id @default(uuid()) @db.Uuid
+  ownerId String @db.Uuid
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title String @db.VarChar(160)
+  description String @db.VarChar(4000)
+  location String @db.VarChar(120)
+  budgetPence Int
+  fundingType String @db.VarChar(100)
+  tasks String @db.VarChar(2000)
+  schedule String @db.VarChar(2000)
+  status String @default("OPEN")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  applications Application[]
+  @@index([ownerId, createdAt])
+}
+
+model Application {
+  details Json @default("{}")
+  id String @id @default(uuid()) @db.Uuid
+  requestId String @db.Uuid
+  request CareRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  caregiverId String @db.Uuid
+  caregiver User @relation(fields: [caregiverId], references: [id], onDelete: Cascade)
+  coverLetter String @db.VarChar(2000)
+  status String @default("PENDING")
+  createdAt DateTime @default(now())
+  @@unique([requestId, caregiverId])
+}
+
+model Message {
+  id String @id @default(uuid()) @db.Uuid
+  senderId String @db.Uuid
+  sender User @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
+  recipientId String @db.Uuid
+  recipient User @relation("Recipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  body String @db.VarChar(4000)
+  createdAt DateTime @default(now())
+  @@index([recipientId, createdAt])
+}
+
+model SavedCaregiver {
+  userId String @db.Uuid
+  user User @relation("Saver", fields: [userId], references: [id], onDelete: Cascade)
+  caregiverId String @db.Uuid
+  caregiver User @relation("Saved", fields: [caregiverId], references: [id], onDelete: Cascade)
+  @@id([userId, caregiverId])
+}
+
+model Review {
+  response String? @db.VarChar(2000)
+  respondedAt DateTime?
+  disputeReason String? @db.VarChar(1000)
+  id String @id @default(uuid()) @db.Uuid
+  authorId String @db.Uuid
+  author User @relation("Reviewer", fields: [authorId], references: [id], onDelete: Cascade)
+  caregiverId String @db.Uuid
+  caregiver User @relation("Reviewed", fields: [caregiverId], references: [id], onDelete: Cascade)
+  rating Int
+  body String @db.VarChar(2000)
+  visible Boolean @default(true)
+  createdAt DateTime @default(now())
+  @@unique([authorId, caregiverId])
+}
+
+model Verification {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind String @db.VarChar(80)
+  reference String @db.VarChar(300)
+  status String @default("PENDING")
+  reason String? @db.VarChar(1000)
+  createdAt DateTime @default(now())
+}
+
+model CareSeekerProfile {
+  userId         String @id @db.Uuid
+  user           User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contactEmail   String? @db.VarChar(254)
+  phone          String @default("") @db.VarChar(30)
+  dateOfBirth    DateTime? @db.Date
+  location       String @default("") @db.VarChar(120)
+  address        String @default("") @db.VarChar(300)
+  postcode       String @default("") @db.VarChar(12)
+  about          String @default("") @db.VarChar(2000)
+  emergencyName  String @default("") @db.VarChar(160)
+  relationship   String @default("") @db.VarChar(80)
+  emergencyPhone String @default("") @db.VarChar(30)
+  language       String @default("English (UK)") @db.VarChar(30)
+  updatedAt      DateTime @updatedAt
+}
+
+model Session {
+  id           String @id @default(uuid()) @db.Uuid
+  userId       String @db.Uuid
+  user         User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash    String @unique @db.Char(64)
+  expiresAt    DateTime
+  lastSeenAt   DateTime @default(now())
+  revokedAt    DateTime?
+  createdAt    DateTime @default(now())
+
+  @@index([userId, revokedAt])
+  @@index([expiresAt])
+}
+
+model AccountStatusHistory {
+  id         String @id @default(uuid()) @db.Uuid
+  userId     String @db.Uuid
+  user       User @relation("Subject", fields: [userId], references: [id], onDelete: Cascade)
+  actorId    String @db.Uuid
+  actor      User @relation("Actor", fields: [actorId], references: [id], onDelete: Restrict)
+  fromStatus AccountStatus
+  toStatus   AccountStatus
+  reason     String? @db.VarChar(1000)
+  createdAt  DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model OrganisationProfile {
+ userId String @id @db.Uuid
+ user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+ name String @default("") @db.VarChar(160)
+ description String @default("") @db.VarChar(4000)
+ address String @default("") @db.VarChar(300)
+ postcode String @default("") @db.VarChar(12)
+ phone String @default("") @db.VarChar(30)
+ website String @default("") @db.VarChar(300)
+ coverage String @default("") @db.VarChar(1000)
+ services String @default("") @db.VarChar(2000)
+ feeRange String @default("") @db.VarChar(200)
+ gallery Json @default("[]")
+ team String @default("") @db.VarChar(2000)
+ virtualTour String @default("") @db.VarChar(300)
+ branches Json @default("[]")
+ cqcReference String @default("") @db.VarChar(100)
+ cqcRating String? @db.VarChar(80)
+ cqcVerifiedAt DateTime?
+ updatedAt DateTime @updatedAt
+}

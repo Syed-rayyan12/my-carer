@@ -74,6 +74,9 @@ const start = async (): Promise<void> => {
     });
     logger.info({ port: env.PORT }, 'Server listening');
   } catch (error) {
+    if (error instanceof Error && 'code' in error && error.code === 'EADDRINUSE') {
+      logger.error({ port: env.PORT }, 'Port is already in use. Stop the existing backend before starting another instance, or configure a different PORT and matching frontend BACKEND_URL.');
+    }
     logger.fatal({ err: error }, 'Startup failed');
     await shutdown('startupFailure', 1);
   }

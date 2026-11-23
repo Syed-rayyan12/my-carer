@@ -42,3 +42,4 @@ describe('Health routes', () => {
     expect(response.body).toEqual({ status: 'error', message: 'Route not found' });
   });
 });
+

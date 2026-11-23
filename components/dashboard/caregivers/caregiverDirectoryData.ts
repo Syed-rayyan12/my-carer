@@ -1,4 +1,5 @@
 export type DirectoryCaregiver = {
+  qualifications?: string[];
   id: string;
   name: string;
   specialty: string;

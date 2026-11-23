@@ -1,4 +1,4 @@
-import ReviewsRatingsPage from "@/components/dashboard/reviews/ReviewsRatingsPage";
+﻿import ReviewsRatingsPage from "@/components/dashboard/reviews/ReviewsRatingsPage";
 
 export const metadata = { title: "Reviews & Ratings | My Carer" };
 

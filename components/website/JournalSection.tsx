@@ -1,29 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, Heart } from "lucide-react";
-import DecorativeSquiggle from "@/components/shared/DecorativeSquiggle";
-const journalPosts = [
-  {
-    date: "Jun 28, 2026",
-    read: "6 min read",
-    title: "How to Choose the Right Caregiver for Your Loved One",
-    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=800&q=85",
-    aboutImage: "/images/about-offer-caregivers.png",
-  },
-  {
-    date: "Jun 28, 2026",
-    read: "5 min read",
-    title: "7 Signs That an Elderly Loved One May Need Extra Support",
-    image: "https://images.unsplash.com/photo-1573497620053-ea5300f94f21?auto=format&fit=crop&w=800&q=85",
-    aboutImage: "/images/about-story.png",
-  },
-  {
-    date: "Jun 28, 2026",
-    read: "6 min read",
-    title: "How to Look for a Professional Caregiver",
-    image: "https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&fit=crop&w=800&q=85",
-    aboutImage: "/images/about-offer-seekers.png",
-  },
-];
+import { ArrowRight } from "lucide-react";
+import BlogCards from "./BlogCards";
 export default function JournalSection({ variant = "default" }: { variant?: "default" | "about" }) {
   return (<section className={`relative bg-[#fff] ${variant === "about" ? "p-[38px_0_48px] max-[600px]:p-[32px_0_40px]" : "p-[85px_0]"}`}>
 
@@ -87,42 +64,8 @@ export default function JournalSection({ variant = "default" }: { variant?: "def
     </div>
 
 
-    <div className={`max-[1050px]:w-[calc(100%_-_40px)] max-[768px]:grid-cols-[1fr_1fr] max-[520px]:w-[calc(100%_-_30px)] max-[520px]:grid-cols-[1fr] w-[min(1100px,_calc(100%_-_60px))] m-[35px_auto_0] grid grid-cols-[repeat(3,_1fr)] gap-[16px] ${variant === "about" ? "m-[20px_auto_0]" : ""}`}>
-
-      {journalPosts.map((post) => (<article className="group/style4 overflow-hidden border border-[#dedfe3] rounded-[9px] bg-[#fff] shadow-[0_5px_18px_rgba(16,_25,_41,_0.06)]" key={post.title}>
-
-        <div className="max-[520px]:h-[250px] h-[240px] overflow-hidden">
-
-          <img className="group-hover/style4:transform-[scale(1.04)] w-full h-full object-cover [transition:transform_0.5s_ease]" src={variant === "about" ? post.aboutImage : post.image} alt={post.title} />
-
-        </div>
-
-        <div className="p-[18px]">
-
-          <div className="flex items-center gap-[6px] mb-[9px] text-[#ff2f68] text-[9px] font-bold">
-            <span>{post.date}</span>
-            <span>•</span>
-            <span>{post.read}</span>
-          </div>
-
-          <h3 className="m-[0_0_9px] text-[#000000] font-commissioner text-[22px] font-semibold leading-[1.4]">{post.title}</h3>
-
-          <p className="m-[0_0_12px] text-[#000]/80 font-normal text-[14.4px] leading-[1.6]">
-            It is a long established fact that a reader will be
-            distracted by the readable content of a page when
-            looking at its layout.
-          </p>
-
-          <Link className="inline-flex items-center gap-[5px] text-[#ff2f68] text-[12.66px] font-bold" href="#article">
-            Read More
-            <ArrowRight size={12} className="text-[#ff2f68]" />
-          </Link>
-
-        </div>
-
-      </article>))}
-
-    </div>
+    <BlogCards limit={3} />
+    <div className="flex justify-center"><Link href="/blogs" className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[#101929] px-5 text-sm font-semibold text-white hover:bg-[#25334a]">View all articles<ArrowRight size={16} /></Link></div>
 
   </section>);
 }

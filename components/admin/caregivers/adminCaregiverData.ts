@@ -1,8 +1,11 @@
 import type { AdminData, AdminUser } from "../adminData";
+import type { CaregiverAvailability } from '@/components/caregiver-dashboard/preview/availabilityData';
 
+export const caregiverPriorities = ["Normal", "High", "Critical"] as const;
+export type CaregiverPriority = typeof caregiverPriorities[number];
 export type VerificationStatus = "Pending" | "Verified" | "Rejected";
-export type AdminCaregiverProfile = { phone: string; experience: number; hourlyRate: number; availability: string; careTypes: string[]; qualifications: string[]; verificationDate: string };
-export type AdminCaregiver = AdminUser & { type: "Caregiver"; verification: VerificationStatus; avatarTone: "pink" | "dark"; profile?: AdminCaregiverProfile; suspendedFrom?: Exclude<AdminUser["status"], "Suspended"> };
+export type AdminCaregiverProfile = { phone: string; experience: number; hourlyRate: number; mileageRate?: number; availability: string; availabilitySchedule?: CaregiverAvailability; careTypes: string[]; qualifications: string[]; verificationDate: string };
+export type AdminCaregiver = AdminUser & { type: "Caregiver"; priority?: CaregiverPriority; verification: VerificationStatus; avatarTone: "pink" | "dark"; profile?: AdminCaregiverProfile; suspendedFrom?: Exclude<AdminUser["status"], "Suspended"> };
 export type AdminCaregiverFilters = { location: string; verification: string; status: string };
 
 export const defaultAdminCaregiverFilters: AdminCaregiverFilters = { location: "", verification: "", status: "" };
@@ -19,13 +22,13 @@ export const initialAdminCaregivers: AdminCaregiver[] = [
 ];
 
 export function isAdminCaregiverList(value: unknown): value is AdminCaregiver[] {
-  return Array.isArray(value) && value.every(person => person && typeof person === "object" && ["id", "name", "initials", "date", "email", "location"].every(key => typeof person[key] === "string") && person.type === "Caregiver" && ["Pending", "Active", "Rejected", "Suspended"].includes(person.status) && ["Pending", "Verified", "Rejected"].includes(person.verification) && ["pink", "dark"].includes(person.avatarTone) && (person.rejectionReason === undefined || typeof person.rejectionReason === "string") && (person.suspendedFrom === undefined || ["Pending", "Active", "Rejected"].includes(person.suspendedFrom)) && (person.profile === undefined || isAdminCaregiverProfile(person.profile)));
+  return Array.isArray(value) && value.every(person => person && typeof person === "object" && ["id", "name", "initials", "date", "email", "location"].every(key => typeof person[key] === "string") && person.type === "Caregiver" && (person.priority === undefined || caregiverPriorities.includes(person.priority)) && ["Pending", "Active", "Rejected", "Suspended"].includes(person.status) && ["Pending", "Verified", "Rejected"].includes(person.verification) && ["pink", "dark"].includes(person.avatarTone) && (person.rejectionReason === undefined || typeof person.rejectionReason === "string") && (person.suspendedFrom === undefined || ["Pending", "Active", "Rejected"].includes(person.suspendedFrom)) && (person.profile === undefined || isAdminCaregiverProfile(person.profile)));
 }
 
 export function isAdminCaregiverProfile(value: unknown): value is AdminCaregiverProfile {
   if (!value || typeof value !== "object") return false;
   const profile = value as Record<string, unknown>;
-  return typeof profile.phone === "string" && typeof profile.availability === "string" && typeof profile.verificationDate === "string" && typeof profile.experience === "number" && Number.isFinite(profile.experience) && profile.experience >= 0 && typeof profile.hourlyRate === "number" && Number.isFinite(profile.hourlyRate) && profile.hourlyRate >= 0 && Array.isArray(profile.careTypes) && profile.careTypes.every(type => typeof type === "string") && Array.isArray(profile.qualifications) && profile.qualifications.every(qualification => typeof qualification === "string");
+  return typeof profile.phone === "string" && typeof profile.availability === "string" && typeof profile.verificationDate === "string" && typeof profile.experience === "number" && Number.isFinite(profile.experience) && profile.experience >= 0 && typeof profile.hourlyRate === "number" && Number.isFinite(profile.hourlyRate) && profile.hourlyRate >= 0 && (profile.mileageRate === undefined || (typeof profile.mileageRate === "number" && Number.isFinite(profile.mileageRate) && profile.mileageRate >= 0)) && Array.isArray(profile.careTypes) && profile.careTypes.every(type => typeof type === "string") && Array.isArray(profile.qualifications) && profile.qualifications.every(qualification => typeof qualification === "string");
 }
 
 export function getAdminCaregiverProfile(caregiver: AdminCaregiver): AdminCaregiverProfile {

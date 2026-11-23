@@ -6,6 +6,10 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    files: ['scripts/**/*.mjs'],
+    languageOptions: { globals: { URL: 'readonly', console: 'readonly', process: 'readonly', fetch: 'readonly' } },
+  },
+  {
     files: ['**/*.ts'],
     rules: {
       'no-console': 'error',
@@ -18,5 +22,9 @@ export default tseslint.config(
   {
     files: ['src/config/env.ts'],
     rules: { 'no-restricted-properties': 'off' },
+  },
+  {
+    files: ['scripts/**/*.ts'],
+    rules: { 'no-console': 'off' },
   },
 );

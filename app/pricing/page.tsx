@@ -4,7 +4,7 @@ import PlatformPageHero from "@/components/website/PlatformPageHero";
 import PricingPlans from "@/components/website/PricingPlans";
 import WebsitePageShell from "@/components/website/WebsitePageShell";
 
-export const metadata: Metadata = { title: "Pricing | My Carer", description: "Compare clear monthly plans for caregivers, care seekers, agencies and local authorities." };
+export const metadata: Metadata = { title: "Pricing | My Carer", description: "Compare Individual Carer, Care Home and Care Agency packages, with six months free on paid plans." };
 
 export default function PricingPage() {
   return <WebsitePageShell activePage="pricing"><PlatformPageHero heart={(<span className="absolute top-0 right-7 mt-1 max-[1024px]:absolute! max-[1024px]:top-12! max-[1024px]:right-7! max-[1024px]:left-auto! max-[1024px]:translate-x-0 max-[1024px]:h-10! max-[1024px]:w-10! max-[1024px]:[--hero-heart-rise-distance:36px] block h-[var(--hero-heart-size)] w-[var(--hero-heart-size)] justify-self-center self-start pointer-events-none" aria-hidden="true">
@@ -46,5 +46,5 @@ export default function PricingPage() {
 
               {/* asli heart */}
               <img src="/images/heart.png" alt="" className="pricing-heart-main relative" />
-            </span>)} animationPage="pricing" label="Pricing" title="Simple, Transparent Pricing" heartAfter="Simple" description="Choose the plan that's right for you. All plans include full access to the platform features for your user type." /><PricingPlans /></WebsitePageShell>;
+            </span>)} animationPage="pricing" label="Pricing" title="Simple, Transparent Pricing" heartAfter="Simple" description="Find the right package for your care career or organisation. Start with six months free on every paid plan." /><PricingPlans /></WebsitePageShell>;
 }

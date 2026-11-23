@@ -10,7 +10,7 @@ import AdminContentSkeleton from "../shared/AdminContentSkeleton";
 import BlogEditorForm from "./BlogEditorForm";
 import { newBlogPost } from "./adminBlogData";
 
-function NewPostEditor() { const [post] = useState(newBlogPost); const { savePost } = useAdminContent(); const router = useRouter(); return <BlogEditorForm post={post} isNew onSave={updated => { savePost(updated); router.replace(`/admin-dashboard/blog/${updated.id}`); }} />; }
+function NewPostEditor() { const [post] = useState(newBlogPost); const { savePost } = useAdminContent(); const router = useRouter(); return <BlogEditorForm post={post} isNew onSave={async updated => { if (!(await savePost(updated))) return false; router.replace(`/admin-dashboard/blog/${updated.id}`); return true; }} />; }
 export default function AdminBlogEditorPage({ postId }: { postId?: string }) {
   const { data, ready, notice, storageError, savePost } = useAdminContent();
   if (!ready) return <AdminContentSkeleton detail label="Loading blog editor" />;

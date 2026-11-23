@@ -2,7 +2,7 @@
 
 import { useState, type KeyboardEvent } from "react";
 import { MessageSquare } from "lucide-react";
-import { allDashboardCaregivers } from "../caregivers/caregiverDirectoryData";
+
 import MessageRow from "./MessageRow";
 import ReplyModal from "./ReplyModal";
 import { MessageListSkeleton } from "./MessagesSkeleton";
@@ -10,7 +10,7 @@ import { useMessages } from "./useMessages";
 import { filterConversations, messageTabs, type MessageTab } from "./messagesData";
 
 export default function MessagesPage() {
-  const { conversations, ready, storageError, updateConversation, toggleStar, saveReply } = useMessages();
+  const { conversations, ready, storageError, updateConversation, toggleStar, saveReply, contacts: allDashboardCaregivers } = useMessages();
   const [tab, setTab] = useState<MessageTab>("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
@@ -46,7 +46,7 @@ export default function MessagesPage() {
           }) : <div className="px-6 py-14 text-center"><MessageSquare size={36} className="mx-auto mb-4 text-[#ff2f68]" /><h2 className="font-jakarta text-lg font-semibold text-[#344054]">{tab === "unread" ? "You’re all caught up" : tab === "starred" ? "No starred conversations yet" : tab === "archived" ? "No archived conversations" : "No messages yet"}</h2><p className="mt-2 font-nunito text-sm text-[#667085]">{tab === "starred" ? "Open a conversation and use the star to keep it handy." : tab === "archived" ? "Conversations you archive will appear here." : "Your caregiver conversations will appear here."}</p></div>}
         </div>
       </section>}
-      <ReplyModal conversation={selected} caregiver={caregiver} onClose={() => setSelectedId(null)} onDraftChange={draft => { if (selected) updateConversation(selected.id, { draft }); }} onReply={() => { if (selected) saveReply(selected.id); }} onStar={() => { if (selected) toggleStar(selected.id); }} onArchive={() => { if (!selected) return; updateConversation(selected.id, { archived: !selected.archived }); setNotice(`Conversation ${selected.archived ? "restored" : "archived"}.`); setSelectedId(null); }} />
+      <ReplyModal conversation={selected} caregiver={caregiver} onClose={() => setSelectedId(null)} onDraftChange={draft => { if (selected) updateConversation(selected.id, { draft }); }} onReply={async () => selected ? saveReply(selected.id) : false} onStar={() => { if (selected) toggleStar(selected.id); }} onArchive={() => { if (!selected) return; updateConversation(selected.id, { archived: !selected.archived }); setNotice(`Conversation ${selected.archived ? "restored" : "archived"}.`); setSelectedId(null); }} />
     </main>
   );
 }

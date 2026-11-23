@@ -9,7 +9,7 @@ export function isAccountSettings(value: unknown): value is AccountSettings {
 
 export function validatePasswordChange(current: string, next: string, confirm: string) {
   if (!current || !next || !confirm) return "Please complete all password fields.";
-  if (next.length < 10 || !/\d/.test(next) || !/[^a-zA-Z0-9]/.test(next)) return "Use at least 10 characters, including a number and a symbol.";
+  if (next.length < 12 || next.length > 128 || /^\s|\s$/.test(next)) return "Use 12-128 characters without leading or trailing spaces.";
   if (next !== confirm) return "Your new passwords do not match.";
   if (current === next) return "Choose a new password that is different from your current password.";
   return "";

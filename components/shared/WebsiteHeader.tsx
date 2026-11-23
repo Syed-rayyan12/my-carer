@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SignupModal } from "@/components/website/SignupModal";
+import WebsiteAccountActions from './WebsiteAccountActions';
+import { useWebsiteSession } from '@/components/auth/useWebsiteSession';
 
 type PageKey = "home" | "about" | "caregivers" | "care-seekers" | "care-homes" | "jobs" | "technology" | "pricing" | "faqs" | "blogs" | "terms" | "privacy-policy" | "contact";
 
@@ -13,25 +16,6 @@ const navigation = [
   { label: "Care Technology", href: "/technology", key: "technology" as PageKey },
   { label: "Contact", href: "/contact", key: "contact" as PageKey },
 ];
-
-function HeaderActions({ onNavigate, mobile = false }: { onNavigate: () => void; mobile?: boolean }) {
-  return (
-    <div className={mobile ? "grid grid-cols-1 gap-3" : "flex flex-wrap items-center gap-3"}>
-      <Link href="/#signin" onClick={onNavigate} className="group inline-flex min-h-11 items-center justify-center gap-3 rounded-[7px] border border-[#ff2f68] px-4 font-nunito text-[14px] font-medium text-[#101929] transition-colors hover:bg-[#fff1f4]">
-        Sign In
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#ff2f68] text-white">
-          <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
-        </span>
-      </Link>
-      <Link href="/#register" onClick={onNavigate} className="group inline-flex min-h-11 items-center justify-center gap-3 rounded-[7px] bg-[#ff2f68] px-4 font-nunito text-[14px] font-medium text-white transition-colors hover:bg-[#e92359]">
-        Register Today
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white text-[#ff2f68]">
-          <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
-        </span>
-      </Link>
-    </div>
-  );
-}
 
 function NavigationLinks({ activePage, onNavigate }: { activePage?: PageKey; onNavigate: () => void }) {
   const linkClass = "whitespace-nowrap rounded-md py-2 font-commissioner text-[16px] font-medium transition-colors hover:text-[#ff2f68]";
@@ -47,6 +31,7 @@ function NavigationLinks({ activePage, onNavigate }: { activePage?: PageKey; onN
           Platform <ChevronDown size={16} className="transition-transform duration-300 group-open:rotate-180" aria-hidden="true" />
         </summary>
         <div className="mt-2 hidden min-w-[205px] rounded-lg border border-[#f1e5e8] bg-white p-2 shadow-lg group-open:block xl:absolute xl:left-0 xl:top-full">
+          <Link href="/blogs" onClick={onNavigate} className="block rounded-md px-3 py-2 font-commissioner text-[16px] text-[#101929] hover:bg-[#fff1f4] hover:text-[#ff2f68]">Blog &amp; Resources</Link>
           <Link href="/caregivers" onClick={onNavigate} className="block rounded-md px-3 py-2 font-commissioner text-[16px] text-[#101929] hover:bg-[#fff1f4] hover:text-[#ff2f68]">Caregivers</Link>
           <Link href="/care-seekers" onClick={onNavigate} className="block rounded-md px-3 py-2 font-commissioner text-[16px] text-[#101929] hover:bg-[#fff1f4] hover:text-[#ff2f68]">Care Seekers</Link>
           <Link href="/pricing#local-authority" onClick={onNavigate} className="block rounded-md px-3 py-2 font-commissioner text-[16px] text-[#101929] hover:bg-[#fff1f4] hover:text-[#ff2f68]">Care Homes</Link>
@@ -62,9 +47,16 @@ function NavigationLinks({ activePage, onNavigate }: { activePage?: PageKey; onN
 }
 
 export default function WebsiteHeader({ activePage }: { activePage?: PageKey }) {
+  const account = useWebsiteSession();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [registrationOpen, setRegistrationOpen] = useState(false);
   const menuRef = useRef<HTMLDialogElement>(null);
   const closeMenu = () => setMenuOpen(false);
+  const openRegistration = () => {
+    menuRef.current?.close();
+    setMenuOpen(false);
+    setRegistrationOpen(true);
+  };
   useEffect(() => {
     const dialog = menuRef.current;
     if (!dialog) return;
@@ -113,7 +105,7 @@ export default function WebsiteHeader({ activePage }: { activePage?: PageKey }) 
         <nav aria-label="Desktop navigation" className="flex items-center justify-center justify-self-center gap-5">
           <NavigationLinks activePage={activePage} onNavigate={closeMenu} />
         </nav>
-        <div className="justify-self-end"><HeaderActions onNavigate={closeMenu} /></div>
+        <div className="justify-self-end"><WebsiteAccountActions {...account} onNavigate={closeMenu} onRegister={openRegistration} /></div>
       </div>
 
       <div className="mx-auto flex min-h-[76px] w-full max-w-[90%] items-center justify-between xl:hidden">
@@ -145,9 +137,10 @@ export default function WebsiteHeader({ activePage }: { activePage?: PageKey }) 
             </div>
             {[...navigation.slice(2), { label: "Pricing", href: "/pricing", key: "pricing" }, { label: "FAQs", href: "/faqs", key: "faqs" }, { label: "Blog & Resources", href: "/blogs", key: "blogs" }].map((item) => <Link key={item.key} href={item.href} onClick={closeMenu} aria-current={activePage === item.key ? "page" : undefined} className={["mb-1 flex min-h-12 items-center justify-between rounded-xl px-4 font-commissioner text-[16px] font-medium", activePage === item.key ? "bg-[#fff1f4] text-[#ff2f68]" : "hover:bg-[#f7f8fa]"].join(" ")}>{item.label}<ArrowRight size={17} className="text-[#ff2f68]" /></Link>)}
           </nav>
-          <div className="shrink-0 border-t border-[#f1e5e8] p-5 pb-[max(20px,env(safe-area-inset-bottom))]"><HeaderActions mobile onNavigate={closeMenu} /></div>
+          <div className="shrink-0 border-t border-[#f1e5e8] p-5 pb-[max(20px,env(safe-area-inset-bottom))]"><WebsiteAccountActions {...account} mobile onNavigate={closeMenu} onRegister={openRegistration} /></div>
         </div>
       </dialog>
+      {registrationOpen && <SignupModal onClose={() => setRegistrationOpen(false)} />}
 
     </header>
   );

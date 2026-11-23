@@ -1,4 +1,4 @@
-import AdminCaregiversPage from "@/components/admin/caregivers/AdminCaregiversPage";
+﻿import AdminCaregiversPage from "@/components/admin/caregivers/AdminCaregiversPage";
 
 export const metadata = { title: "Caregivers | My Carer Admin" };
 

@@ -1,4 +1,4 @@
-import MyProfilePage from "@/components/dashboard/profile/MyProfilePage";
+﻿import MyProfilePage from "@/components/dashboard/profile/MyProfilePage";
 
 export const metadata = { title: "My Profile | My Carer" };
 

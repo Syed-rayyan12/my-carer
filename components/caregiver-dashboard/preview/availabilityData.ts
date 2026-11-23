@@ -1,8 +1,8 @@
 export const caregiverWeekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 export type AvailabilitySlot = { start: string; end: string };
 export type AvailabilityDay = { day: string; slots: AvailabilitySlot[] };
-export type CaregiverAvailability = { days: string[]; start: string; end: string; weekly?: AvailabilityDay[] };
-export const initialCaregiverAvailability: CaregiverAvailability = { days: caregiverWeekdays.slice(0, 5), start: "09:00", end: "18:00" };
+export type CaregiverAvailability = { days: string[]; start: string; end: string; weekly?: AvailabilityDay[]; minimumVisitMinutes?: number };
+export const initialCaregiverAvailability: CaregiverAvailability = { days: caregiverWeekdays.slice(0, 5), start: "09:00", end: "18:00", minimumVisitMinutes: 30 };
 const validTime = (value: unknown): value is string => typeof value === "string" && /^([01]\d|2[0-3]):[0-5]\d$/.test(value);
 export function validateWeeklySchedule(weekly: AvailabilityDay[]) {
   if (!Array.isArray(weekly) || weekly.length !== 7 || new Set(weekly.map(item => item?.day)).size !== 7) return "Include every day of the week once.";
@@ -15,6 +15,7 @@ export function validateWeeklySchedule(weekly: AvailabilityDay[]) {
 export function isCaregiverAvailability(value: unknown): value is CaregiverAvailability {
   if (!value || typeof value !== "object") return false; const a = value as Record<string, unknown>;
   if (!Array.isArray(a.days) || new Set(a.days).size !== a.days.length || !a.days.every(day => typeof day === "string" && caregiverWeekdays.includes(day)) || !validTime(a.start) || !validTime(a.end) || a.end <= a.start) return false;
+  if (a.minimumVisitMinutes !== undefined && (typeof a.minimumVisitMinutes !== "number" || !Number.isInteger(a.minimumVisitMinutes) || a.minimumVisitMinutes < 30 || a.minimumVisitMinutes > 1440)) return false;
   if (a.weekly === undefined) return true;
   if (!Array.isArray(a.weekly) || validateWeeklySchedule(a.weekly)) return false;
   const active = a.weekly.filter(row => row.slots.length).map(row => row.day);

@@ -1,4 +1,4 @@
-import CareArrangementsPage from "@/components/dashboard/arrangements/CareArrangementsPage";
+﻿import CareArrangementsPage from "@/components/dashboard/arrangements/CareArrangementsPage";
 
 export const metadata = { title: "Care Arrangements | My Carer" };
 

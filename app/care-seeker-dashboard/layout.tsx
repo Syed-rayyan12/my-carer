@@ -1,6 +1,4 @@
-import type { ReactNode } from "react";
-import DashboardLayout from "@/components/dashboard/DashboardLayout";
-
-export default function Layout({ children }: { children: ReactNode }) {
-  return <DashboardLayout>{children}</DashboardLayout>;
-}
+﻿import type {ReactNode} from 'react';
+import {AuthBoundary} from '@/components/auth/AuthBoundary';
+import CareSeekerProfileGate from '@/components/auth/CareSeekerProfileGate';
+export default function Layout({children}:{children:ReactNode}){return <AuthBoundary role="CARE_SEEKER"><CareSeekerProfileGate>{children}</CareSeekerProfileGate></AuthBoundary>;}

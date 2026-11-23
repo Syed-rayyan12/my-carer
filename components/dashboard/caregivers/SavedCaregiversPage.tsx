@@ -9,17 +9,17 @@ import { useDashboard } from "../DashboardContext";
 import { SavedCaregiverGridSkeleton } from "../loading/DashboardSkeleton";
 import CaregiverResultCard from "./CaregiverResultCard";
 import CaregiverMessageModal from "./CaregiverMessageModal";
-import { allDashboardCaregivers, type DirectoryCaregiver } from "./caregiverDirectoryData";
+import { type DirectoryCaregiver } from "./caregiverDirectoryData";
 import { directoryCaregiverProfile } from "./directoryCaregiverProfile";
 
 export default function SavedCaregiversPage() {
-  const { saved, savedReady, savedStorageError, setCaregiverSaved } = useDashboard();
+  const { saved, savedReady, savedStorageError, setCaregiverSaved, caregivers: allDashboardCaregivers } = useDashboard();
   const reduceMotion = useReducedMotion();
   const [selected, setSelected] = useState<DirectoryCaregiver | null>(null);
   const [messageRecipient, setMessageRecipient] = useState<DirectoryCaregiver | null>(null);
   const [lastRemoved, setLastRemoved] = useState<string | null>(null);
-  const caregivers = saved.flatMap(name => {
-    const caregiver = allDashboardCaregivers.find(person => person.name === name);
+  const caregivers = saved.flatMap(id => {
+    const caregiver = allDashboardCaregivers.find(person => person.id === id);
     return caregiver ? [caregiver] : [];
   });
 
@@ -34,12 +34,12 @@ export default function SavedCaregiversPage() {
       {!savedReady ? <SavedCaregiverGridSkeleton /> : (
         <motion.div layout={!reduceMotion} className="relative grid grid-cols-3 items-stretch gap-4 max-[1350px]:grid-cols-2 max-[750px]:grid-cols-1" transition={{ layout: { type: "spring", stiffness: 350, damping: 32 } }}>
           <AnimatePresence initial={false} mode="popLayout">
-            {caregivers.map(caregiver => <motion.div key={caregiver.id} layout={reduceMotion ? false : "position"} initial={{ opacity: 0, y: reduceMotion ? 0 : 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: reduceMotion ? 1 : 0.96 }} transition={{ duration: reduceMotion ? 0 : 0.18, layout: { type: "spring", stiffness: 350, damping: 32 } }} className="h-full min-w-0"><CaregiverResultCard variant="saved" caregiver={caregiver} saved onViewProfile={() => setSelected(caregiver)} onToggleSave={() => setCaregiverSaved(caregiver.name, false)} onMessage={() => setMessageRecipient(caregiver)} onRemove={() => { setCaregiverSaved(caregiver.name, false); setLastRemoved(caregiver.name); }} /></motion.div>)}
+            {caregivers.map(caregiver => <motion.div key={caregiver.id} layout={reduceMotion ? false : "position"} initial={{ opacity: 0, y: reduceMotion ? 0 : 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: reduceMotion ? 1 : 0.96 }} transition={{ duration: reduceMotion ? 0 : 0.18, layout: { type: "spring", stiffness: 350, damping: 32 } }} className="h-full min-w-0"><CaregiverResultCard variant="saved" caregiver={caregiver} saved onViewProfile={() => setSelected(caregiver)} onToggleSave={() => setCaregiverSaved(caregiver.id, false)} onMessage={() => setMessageRecipient(caregiver)} onRemove={() => { setCaregiverSaved(caregiver.name, false); setLastRemoved(caregiver.id); }} /></motion.div>)}
             {caregivers.length === 0 && <motion.div key="no-saved-caregivers" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: reduceMotion ? 0 : 0.18 }} className="col-span-full rounded-2xl border border-[#e5e2dc] bg-white px-6 py-14 text-center"><Heart size={38} className="mx-auto mb-4 text-[#ff2f68]" /><h2 className="font-jakarta text-xl font-semibold text-[#202925]">Your favourites belong here</h2><p className="mt-2 mb-6 font-nunito text-sm text-[#667085]">Save caregivers while browsing to compare their profiles and find the right support.</p><Link className="inline-flex items-center gap-2 rounded-lg bg-[#ff2f68] px-5 py-3 font-nunito text-sm font-semibold text-white hover:bg-[#e92359]" href="/care-seeker-dashboard/find-caregivers">Find Caregivers<ArrowRight size={16} /></Link></motion.div>}
           </AnimatePresence>
         </motion.div>
       )}
-      <CaregiverProfileModal open={selected !== null} onClose={() => setSelected(null)} profile={selected ? directoryCaregiverProfile(selected) : demoCaregiverProfile} saved={selected ? saved.includes(selected.name) : false} onFavouriteChange={(isSaved, caregiver) => setCaregiverSaved(caregiver.name, isSaved)} />
+      <CaregiverProfileModal onContact={() => { if (selected) {setMessageRecipient(selected);setSelected(null);} }} open={selected !== null} onClose={() => setSelected(null)} profile={selected ? directoryCaregiverProfile(selected) : demoCaregiverProfile} saved={selected ? saved.includes(selected.id) : false} onFavouriteChange={(isSaved, caregiver) => caregiver.id && setCaregiverSaved(caregiver.id, isSaved)} />
       <CaregiverMessageModal caregiver={messageRecipient} onClose={() => setMessageRecipient(null)} />
     </main>
   );

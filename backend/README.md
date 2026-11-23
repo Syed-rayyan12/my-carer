@@ -1,136 +1,71 @@
-# Backend foundation
+# My Carer backend
 
-Standalone Express 5 / TypeScript monolith skeleton with PostgreSQL and Prisma 7. No authentication, models, business modules, or migrations are included.
+Express 5, strict TypeScript, PostgreSQL, and Prisma 7 monolith. The working tree includes caregiver/care seeker authentication, admin approval and platform business modules. See [current work status](docs/work-status.md) for verified checks and remaining acceptance/setup work.
 
-## Prerequisites
+## Start locally
 
-- Node.js 26 LTS (26.13.0 or later in the 26.x line) and npm.
-- Docker Engine/Desktop with Compose v2, or an existing PostgreSQL instance.
-- Git for version control; this backend uses the existing parent repository.
+Use Node 26 LTS and npm. Docker Compose is optional if PostgreSQL is already installed.
 
-TypeScript is intentionally on the approved 6.0.x line: the current TypeScript ESLint release does not support TypeScript 7. Other dependencies use stable versions, locked in `package-lock.json`. Prisma CLI, client, and PostgreSQL adapter use the same 7.x release; the npm `latest` CLI tag currently points to a Prisma 8 release candidate.
+1. Work from `backend/`, run `npm ci`, and copy `.env.example` to `.env` if needed.
+2. Set a working `DATABASE_URL`. The example matches the Compose development credentials. If PostgreSQL already occupies port 5432, use its credentials or free the port before running Compose.
+3. Run `npm run db:up` only when using Docker.
+4. Run `npm run db:generate`, then `npm run db:deploy` to apply the included auth migration without a database reset.
+5. Temporarily set `ADMIN_SEED_EMAIL` and a unique `ADMIN_SEED_PASSWORD` (12–128 characters) in `.env`. Run `npm run admin:create`, then remove the password from `.env`. This command never overwrites existing accounts and creates no default credentials.
+6. Run `npm run dev`. In another terminal at the repository root, run `npm run dev` for Next.js.
+7. Open `/signup` or `/signin`; use `/admin/signin` for the provisioned admin. Approve new Care Seekers on `/admin-dashboard` or `/admin-dashboard/care-seekers`.
 
-## Local setup
+Next's server-only `BACKEND_URL` defaults to `http://127.0.0.1:4000`. Change it in the frontend environment when the API runs elsewhere. Browser requests use `/api`, keeping cookies on the frontend origin. Backend `CORS_ORIGIN` must exactly include that origin, including its port. No email verification is required: new accounts stay pending until admin approval.
 
-Run commands from `backend/` so the environment loader and Prisma resolve the correct files.
+Same-browser tabs can now use separate accounts, including accounts of the same role. Session tokens remain in HttpOnly cookies; a non-secret per-tab context selects the cookie at the Next gateway. See [session isolation and startup troubleshooting](docs/session-isolation.md) for behavior, verification and local PostgreSQL recovery. `DATABASE_POOL_MAX` defaults to 5 connections per API process.
 
-```sh
-cd backend
-nvm install 26
-nvm use 26
-npm ci
-```
-
-If `.env` does not exist, copy `.env.example` to `.env` (`Copy-Item .env.example .env` in PowerShell, or `cp .env.example .env` on Unix). A local `.env` is already provided in the initial setup and is ignored by Git. The example contains public local-development credentials, not production secrets.
-
-```sh
-npm run db:up
-npm run db:generate
-npm run dev
-```
-
-The API listens on port 4000 by default:
-
-- `GET http://localhost:4000/api/v1/health`: liveness, no database call, status and process uptime in seconds.
-- `GET http://localhost:4000/api/v1/health/ready`: executes `SELECT 1`, returning 503 if the database is unavailable.
-
-The server verifies database connectivity before opening its HTTP port. `app.ts` can be imported independently without listening or connecting. Readiness uses the infrastructure helper in `config/db.ts`; future business queries belong exclusively in repositories.
-
-Compose needs host port 5432 to be free. If you already run PostgreSQL on that port, set `DATABASE_URL` to valid credentials for that instance instead, or stop that instance before starting Compose. The setup does not modify existing PostgreSQL users or databases.
-
-No migration is needed for this empty schema. After setting `DATABASE_URL` and later adding your first model, the exact command to create and apply the first development migration is:
-
-```sh
-npm run db:migrate -- --name init
-```
-
-For production, apply existing, reviewed migrations using `npm run db:deploy`. No migration has been generated or run by this setup.
-
-## Configuration
-
-Only `src/config/env.ts` accesses `process.env`. It loads `.env` with Node's built-in loader, preserves externally supplied values, validates with Zod, and exits with readable field errors if invalid. Never commit deployment secrets.
-
-| Variable               | Meaning                                                                                        |
-| ---------------------- | ---------------------------------------------------------------------------------------------- |
-| `PORT`                 | HTTP port, 1–65535                                                                             |
-| `NODE_ENV`             | `development`, `test`, or `production`                                                         |
-| `DATABASE_URL`         | PostgreSQL connection URL; matches Compose in the example                                      |
-| `CORS_ORIGIN`          | Comma-separated HTTP(S) origins, without trailing slashes; `*` allowed only outside production |
-| `LOG_LEVEL`            | Pino level from `trace` to `fatal`, or `silent`                                                |
-| `RATE_LIMIT_WINDOW_MS` | Positive rate-limit window in milliseconds                                                     |
-| `RATE_LIMIT_MAX`       | Maximum requests per client IP in that window                                                  |
-| `TRUST_PROXY`          | Trusted reverse-proxy hop count; defaults to `0`                                               |
-
-Set `TRUST_PROXY` to match your actual network topology. All paths to the server must have the configured number of proxy hops, and the proxy must sanitize forwarded headers. The default rate-limit store is in memory, suitable for this single-process skeleton; limits reset on restart. Health routes are subject to the global limiter.
-
-Logs are pretty in development and JSON in test/production. Requests receive generated `X-Request-Id` values. Request bodies, query strings, and headers are omitted from request logs; common secret fields and database credentials are redacted. Production error responses omit internal details and stack traces. 5xx failures log the error server-side.
-
-SIGINT/SIGTERM stop new requests, drain the HTTP server, disconnect Prisma, then exit. A 15-second deadline bounds shutdown. Startup errors, uncaught exceptions, and unhandled rejections exit with code 1.
+The migration was applied successfully to an isolated PostgreSQL test database during development. The configured application database on localhost:5432 rejected the example credentials (P1000), so applying it there and provisioning the real admin still require valid local configuration. Existing PostgreSQL users/databases were not altered.
 
 ## Scripts
 
-| Script                | Purpose                                                             |
-| --------------------- | ------------------------------------------------------------------- |
-| `npm run dev`         | Run with tsx watch                                                  |
-| `npm run build`       | Compile `src/` into `dist/` with tsc                                |
-| `npm start`           | Run compiled server                                                 |
-| `npm run lint`        | Check ESLint rules                                                  |
-| `npm run lint:fix`    | Apply ESLint fixes                                                  |
-| `npm run format`      | Format supported project files with Prettier                        |
-| `npm run typecheck`   | Type-check source without emitting                                  |
-| `npm test`            | Run Vitest and Supertest health checks                              |
-| `npm run db:generate` | Generate the Prisma client; does not connect or migrate             |
-| `npm run db:migrate`  | Create/apply development migrations, only when explicitly requested |
-| `npm run db:deploy`   | Apply existing production migrations                                |
-| `npm run db:studio`   | Open Prisma Studio                                                  |
-| `npm run db:up`       | Start PostgreSQL and wait for its healthcheck                       |
-| `npm run db:down`     | Stop PostgreSQL, retaining its named data volume                    |
+| Script | Purpose |
+| --- | --- |
+| `dev` | tsx watch server |
+| `build` / `start` | Compile source / run compiled server |
+| `lint` / `lint:fix` | ESLint check / fixes |
+| `format` | Prettier formatting |
+| `typecheck` | Strict source type checking |
+| `test` | Health, auth validation/crypto, production cookie/error tests |
+| `test:integration` | Real PostgreSQL API/security tests using `.env.test.local` |
+| `test:frontend` | Next-to-Express HTTP tests with local isolated servers |
+| `db:generate` | Generate ignored Prisma client |
+| `db:migrate` | Create future development migrations |
+| `db:deploy` | Apply included migrations without resetting data |
+| `db:studio` | Prisma Studio |
+| `db:up` / `db:down` | Start/stop Compose; named data volume is retained |
+| `admin:create` | Provision initial admin from temporary environment credentials |
 
-Generate the client before type-checking, testing, or building on a clean checkout:
+## Architecture
 
-```sh
-npm run db:generate
-npm run typecheck
-npm run lint
-npm test
-npm run build
-npm start
-```
+Future and current modules follow route → controller → service → repository → PostgreSQL. Only repositories perform business Prisma queries. `config/db.ts` owns the shared client and infrastructure probes. `app.ts` configures Express without listening; `server.ts` verifies the database before listening and manages shutdown.
 
-The health tests mock the database probe to verify liveness, successful readiness, unavailable readiness, and 404 JSON without a live database. They do not verify an actual PostgreSQL connection. To verify that connection, start PostgreSQL and the server, then request `/api/v1/health/ready`.
+- `prisma/`: schema and versioned SQL migration.
+- `src/config/`: typed environment, shared database connection, redacting logger.
+- `src/modules/auth/`: validation, password/session crypto, middleware, controllers, services, repository, admin provisioning.
+- `src/middlewares/`: request logging/IDs, rate limiting, consistent error responses.
+- `src/routes/`: `/api/v1` mount and health endpoints.
+- `src/types/`: Express auth request augmentation.
+- `tests/`: unit/HTTP and opt-in PostgreSQL integration checks.
+- `docs/auth-api.md`: endpoint table, requests/responses, security behavior, and deployment limits.
 
-For a production deployment, generate and build with development dependencies available, then run `dist/server.js` with production dependencies and production environment values. Inject a real database URL and explicit CORS origins. The Compose service and its public credentials are for local development only.
+`GET /api/v1/health` is liveness without a DB query; `/health/ready` probes `SELECT 1` and returns 503 on failure. Invalid environment input exits early with readable field errors. SIGINT/SIGTERM drain HTTP, disconnect Prisma, then exit, with a 15-second shutdown bound. Startup/fatal errors exit with code 1.
 
-## Folder layout
+## Environment and production
 
-- `prisma/schema.prisma`: generator and datasource only; `prisma/migrations/` is empty apart from its Git placeholder.
-- `prisma.config.ts`: Prisma CLI schema, migration path, and validated database URL.
-- `src/config/`: environment validation, logger, shared Prisma client and lifecycle/probe helpers.
-- `src/constants/`: reserved for shared constants.
-- `src/modules/`: reserved for future feature modules.
-- `src/middlewares/`: request logging, global rate limiting, not-found and error handling.
-- `src/utils/`: operational API errors and async route wrapper.
-- `src/types/express.d.ts`: placeholder for future Express request augmentation.
-- `src/routes/index.ts`: health router mounted at `/api/v1`.
-- `src/app.ts`: HTTP middleware wiring without listening.
-- `src/server.ts`: database startup, HTTP listener, process lifecycle.
-- `src/generated/prisma/`: generated, ignored client compiled alongside the source.
-- `tests/`: Vitest setup and Supertest health tests.
+Required variables are documented in `.env.example`. Only `src/config/env.ts` accesses `process.env`. Optional session settings default to a 12-hour absolute session, 30-day remembered session, and 60-minute idle timeout. Passive session polling does not renew idle expiry. Cookies and session revocation are enforced server-side.
 
-## Adding a module later
+Set `NODE_ENV=production`, use HTTPS, explicit CORS origins, and an accurate reverse-proxy configuration. Keep database and admin credentials out of Git. Configure rate limiting at trusted ingress for multi-user production traffic; the Next gateway deliberately does not forward untrusted IP headers, so backend IP quotas are shared by gateway clients. See the API guide for exact boundaries.
 
-Use `src/modules/<feature>/` with `<feature>.routes.ts`, `<feature>.controller.ts`, `<feature>.service.ts`, `<feature>.repository.ts`, and `<feature>.schema.ts`. Use named exports and dot-separated filenames. Mount the feature router in `src/routes/index.ts`.
+## Checks
 
-The flow is route → controller → service → repository → PostgreSQL. Routes wire middleware and Zod request validation. Controllers handle HTTP input/output only. Services contain business rules. Only repositories import the shared `prisma` instance from `config/db.ts` and issue business queries. Never create a Prisma client per module or request. Throw `ApiError` for operational failures and forward other errors to the central handler. Prisma P2002 maps to 409; P2025 maps to 404. No feature implementation is included here.
+Generate the client first, then run `npm run typecheck`, `npm run lint`, `npm test`, and `npm run build`. To run DB tests, provide `.env.test.local` with a dedicated `DATABASE_URL` whose database name is `carer_auth_test`, apply the migration to that database, then run `npm run test:integration`. Never point tests at application or production data. The frontend HTTP suite additionally needs its local servers running as described in the API guide.
 
-## References
+The project targets Node 26 LTS; the available development machine currently runs Node 24.10.0. Verify the deployment on the target Node LTS runtime as well.
 
-- [Prisma 7 setup and adapter requirements](https://www.prisma.io/docs/orm/v7)
-- [Prisma client generator configuration](https://www.prisma.io/docs/orm/v7/prisma-schema/overview/generators)
-- [PostgreSQL official Docker image and volume layout](https://hub.docker.com/_/postgres)
+## Feature module and page API guide
 
-## Initial verification
-
-Verified on the available Node 24.10.0 runtime with TypeScript 6.0.3 and Prisma 7.10.1: client generation, source type-checking, ESLint, four health tests, production compilation, and Prettier all passed. The project targets Node 26 LTS; verification on that deployment runtime remains necessary. Invalid environment input exited with code 1 and a readable field error.
-
-Docker was unavailable on the setup machine. An existing PostgreSQL instance on localhost:5432 rejected the public example credentials. The server logged the startup failure, disconnected, and exited with code 1 without listening. A successful live database connection and graceful shutdown with active requests were not verified. No migrations were run.
+See [backend-structure.md](docs/backend-structure.md) for feature ownership, the route/controller/service/repository structure, page-specific endpoints and test commands.

@@ -1,0 +1,6 @@
+import Link from 'next/link';
+import Image from 'next/image';
+import { SigninForm, SignupForm } from './AuthForms';
+export function AuthPage({ signup = false, admin = false }: { signup?: boolean; admin?: boolean }) {
+  return <main className="flex min-h-screen flex-col items-center justify-center bg-[#fff7f9] px-4 py-10"><Link href="/" className="mb-6"><Image width={128} height={80} src="/logo.png" alt="My Carer home" className="h-20 w-32 object-contain" /></Link><section className="w-full max-w-[467px] rounded-2xl border border-[#ffe0e9] bg-white p-6 shadow-[0_15px_60px_#1019290d] sm:p-8"><h1 className="font-commissioner text-3xl font-bold">{signup ? 'Create your account' : admin ? 'Admin Sign In' : 'Welcome back'}</h1><p className="mb-6 mt-2 text-sm leading-6 text-[#667085]">{signup ? 'Register as a Care Seeker or Caregiver. An admin will review your account before you can sign in.' : admin ? 'Sign in to review and approve registrations.' : 'Sign in with the correct account type to access your dashboard.'}</p>{signup ? <SignupForm /> : <SigninForm admin={admin} />}</section><Link href="/" className="mt-6 text-sm text-[#667085] hover:text-[#ff2f68]">← Back to My Carer</Link></main>;
+}

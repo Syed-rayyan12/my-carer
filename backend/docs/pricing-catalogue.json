@@ -1,0 +1,1429 @@
+[
+  {
+    "id": "CARER_FREE",
+    "category": "CAREGIVER",
+    "tier": "Free",
+    "title": "Individual carer Free",
+    "subtitle": "For self-employed carers and personal assistants",
+    "pricePence": 0,
+    "annualPricePence": 0,
+    "trialMonths": 0,
+    "currency": "GBP",
+    "interval": "month",
+    "defaultRole": "CAREGIVER",
+    "featureRows": [
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Basic profile listing",
+        "value": "✓"
+      },
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Postcode searchable",
+        "value": "✓"
+      },
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Profile photo & bio",
+        "value": "—"
+      },
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Specialisms listed",
+        "value": "1"
+      },
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Qualifications & certificates",
+        "value": "—"
+      },
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Availability calendar",
+        "value": "—"
+      },
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Featured / top placement",
+        "value": "—"
+      },
+      {
+        "section": "TRUST & VERIFICATION",
+        "label": "DBS verified badge",
+        "value": "—"
+      },
+      {
+        "section": "TRUST & VERIFICATION",
+        "label": "Right to work verified",
+        "value": "—"
+      },
+      {
+        "section": "TRUST & VERIFICATION",
+        "label": "Collect & display reviews",
+        "value": "Display only"
+      },
+      {
+        "section": "TRUST & VERIFICATION",
+        "label": "Respond to reviews",
+        "value": "—"
+      },
+      {
+        "section": "COMMUNICATION & LEADS",
+        "label": "Direct message from families",
+        "value": "—"
+      },
+      {
+        "section": "COMMUNICATION & LEADS",
+        "label": "Job alerts (agency roles)",
+        "value": "—"
+      },
+      {
+        "section": "COMMUNICATION & LEADS",
+        "label": "Profile analytics dashboard",
+        "value": "—"
+      },
+      {
+        "section": "COMMUNICATION & LEADS",
+        "label": "Customer support",
+        "value": "Email only"
+      }
+    ],
+    "features": [
+      "Basic profile listing",
+      "Postcode searchable",
+      "Specialisms listed: 1",
+      "Collect & display reviews: Display only",
+      "Customer support: Email only"
+    ],
+    "entitlements": {
+      "basicProfile": true,
+      "bio": false,
+      "specialismsLimit": 1,
+      "qualifications": false,
+      "availability": false,
+      "featured": false,
+      "dbs": false,
+      "rightToWork": false,
+      "reviewsCollect": false,
+      "reviewsRespond": false,
+      "reviewsDispute": false,
+      "directMessages": false,
+      "jobAlerts": false,
+      "analytics": false,
+      "jobLimit": 0,
+      "shortlist": false,
+      "candidateFilters": false,
+      "galleryLimit": 0,
+      "virtualTour": false,
+      "serviceDetails": false,
+      "feeRange": false,
+      "team": false,
+      "carousel": false,
+      "multiBranch": false,
+      "integrations": false,
+      "apiAccess": false,
+      "monthlyReport": false,
+      "agencyBadge": false
+    },
+    "displayOrder": 0
+  },
+  {
+    "id": "CARER_VERIFIED",
+    "category": "CAREGIVER",
+    "tier": "Verified",
+    "title": "Individual carer Verified",
+    "subtitle": "For self-employed carers and personal assistants",
+    "pricePence": 999,
+    "annualPricePence": 9900,
+    "trialMonths": 6,
+    "currency": "GBP",
+    "interval": "month",
+    "defaultRole": "CAREGIVER",
+    "featureRows": [
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Basic profile listing",
+        "value": "✓"
+      },
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Postcode searchable",
+        "value": "✓"
+      },
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Profile photo & bio",
+        "value": "✓"
+      },
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Specialisms listed",
+        "value": "Up to 5"
+      },
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Qualifications & certificates",
+        "value": "—"
+      },
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Availability calendar",
+        "value": "—"
+      },
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Featured / top placement",
+        "value": "—"
+      },
+      {
+        "section": "TRUST & VERIFICATION",
+        "label": "DBS verified badge",
+        "value": "✓"
+      },
+      {
+        "section": "TRUST & VERIFICATION",
+        "label": "Right to work verified",
+        "value": "✓"
+      },
+      {
+        "section": "TRUST & VERIFICATION",
+        "label": "Collect & display reviews",
+        "value": "✓"
+      },
+      {
+        "section": "TRUST & VERIFICATION",
+        "label": "Respond to reviews",
+        "value": "✓"
+      },
+      {
+        "section": "COMMUNICATION & LEADS",
+        "label": "Direct message from families",
+        "value": "✓"
+      },
+      {
+        "section": "COMMUNICATION & LEADS",
+        "label": "Job alerts (agency roles)",
+        "value": "—"
+      },
+      {
+        "section": "COMMUNICATION & LEADS",
+        "label": "Profile analytics dashboard",
+        "value": "—"
+      },
+      {
+        "section": "COMMUNICATION & LEADS",
+        "label": "Customer support",
+        "value": "Email & chat"
+      }
+    ],
+    "features": [
+      "Basic profile listing",
+      "Postcode searchable",
+      "Profile photo & bio",
+      "Specialisms listed: Up to 5",
+      "DBS verified badge",
+      "Right to work verified",
+      "Collect & display reviews",
+      "Respond to reviews",
+      "Direct message from families",
+      "Customer support: Email & chat"
+    ],
+    "entitlements": {
+      "basicProfile": true,
+      "bio": true,
+      "specialismsLimit": 5,
+      "qualifications": false,
+      "availability": false,
+      "featured": false,
+      "dbs": true,
+      "rightToWork": true,
+      "reviewsCollect": true,
+      "reviewsRespond": true,
+      "reviewsDispute": false,
+      "directMessages": true,
+      "jobAlerts": false,
+      "analytics": false,
+      "jobLimit": 0,
+      "shortlist": false,
+      "candidateFilters": false,
+      "galleryLimit": 0,
+      "virtualTour": false,
+      "serviceDetails": false,
+      "feeRange": false,
+      "team": false,
+      "carousel": false,
+      "multiBranch": false,
+      "integrations": false,
+      "apiAccess": false,
+      "monthlyReport": false,
+      "agencyBadge": false
+    },
+    "displayOrder": 1
+  },
+  {
+    "id": "CARER_PRO",
+    "category": "CAREGIVER",
+    "tier": "Pro",
+    "title": "Individual carer Pro",
+    "subtitle": "For self-employed carers and personal assistants",
+    "pricePence": 1999,
+    "annualPricePence": 19900,
+    "trialMonths": 6,
+    "currency": "GBP",
+    "interval": "month",
+    "defaultRole": "CAREGIVER",
+    "featureRows": [
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Basic profile listing",
+        "value": "✓"
+      },
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Postcode searchable",
+        "value": "✓"
+      },
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Profile photo & bio",
+        "value": "✓"
+      },
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Specialisms listed",
+        "value": "Unlimited"
+      },
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Qualifications & certificates",
+        "value": "✓"
+      },
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Availability calendar",
+        "value": "✓"
+      },
+      {
+        "section": "PROFILE & VISIBILITY",
+        "label": "Featured / top placement",
+        "value": "✓"
+      },
+      {
+        "section": "TRUST & VERIFICATION",
+        "label": "DBS verified badge",
+        "value": "✓"
+      },
+      {
+        "section": "TRUST & VERIFICATION",
+        "label": "Right to work verified",
+        "value": "✓"
+      },
+      {
+        "section": "TRUST & VERIFICATION",
+        "label": "Collect & display reviews",
+        "value": "✓"
+      },
+      {
+        "section": "TRUST & VERIFICATION",
+        "label": "Respond to reviews",
+        "value": "✓"
+      },
+      {
+        "section": "COMMUNICATION & LEADS",
+        "label": "Direct message from families",
+        "value": "✓"
+      },
+      {
+        "section": "COMMUNICATION & LEADS",
+        "label": "Job alerts (agency roles)",
+        "value": "✓"
+      },
+      {
+        "section": "COMMUNICATION & LEADS",
+        "label": "Profile analytics dashboard",
+        "value": "✓"
+      },
+      {
+        "section": "COMMUNICATION & LEADS",
+        "label": "Customer support",
+        "value": "Priority"
+      }
+    ],
+    "features": [
+      "Basic profile listing",
+      "Postcode searchable",
+      "Profile photo & bio",
+      "Specialisms listed: Unlimited",
+      "Qualifications & certificates",
+      "Availability calendar",
+      "Featured / top placement",
+      "DBS verified badge",
+      "Right to work verified",
+      "Collect & display reviews",
+      "Respond to reviews",
+      "Direct message from families",
+      "Job alerts (agency roles)",
+      "Profile analytics dashboard",
+      "Customer support: Priority"
+    ],
+    "entitlements": {
+      "basicProfile": true,
+      "bio": true,
+      "specialismsLimit": null,
+      "qualifications": true,
+      "availability": true,
+      "featured": true,
+      "dbs": true,
+      "rightToWork": true,
+      "reviewsCollect": true,
+      "reviewsRespond": true,
+      "reviewsDispute": false,
+      "directMessages": true,
+      "jobAlerts": true,
+      "analytics": true,
+      "jobLimit": 0,
+      "shortlist": false,
+      "candidateFilters": false,
+      "galleryLimit": 0,
+      "virtualTour": false,
+      "serviceDetails": false,
+      "feeRange": false,
+      "team": false,
+      "carousel": false,
+      "multiBranch": false,
+      "integrations": false,
+      "apiAccess": false,
+      "monthlyReport": false,
+      "agencyBadge": false
+    },
+    "displayOrder": 2
+  },
+  {
+    "id": "HOME_BASIC",
+    "category": "CARE_HOME",
+    "tier": "Basic",
+    "title": "Care home Basic",
+    "subtitle": "For residential, nursing, and specialist care homes",
+    "pricePence": 0,
+    "annualPricePence": 0,
+    "trialMonths": 0,
+    "currency": "GBP",
+    "interval": "month",
+    "defaultRole": "CARE_SEEKER",
+    "featureRows": [
+      {
+        "section": "LISTING & PROFILE",
+        "label": "CQC data & rating displayed",
+        "value": "✓"
+      },
+      {
+        "section": "LISTING & PROFILE",
+        "label": "Address, phone & contact info",
+        "value": "✓"
+      },
+      {
+        "section": "LISTING & PROFILE",
+        "label": "Photo gallery",
+        "value": "—"
+      },
+      {
+        "section": "LISTING & PROFILE",
+        "label": "Virtual tour embed",
+        "value": "—"
+      },
+      {
+        "section": "LISTING & PROFILE",
+        "label": "Services & specialisms detail",
+        "value": "—"
+      },
+      {
+        "section": "LISTING & PROFILE",
+        "label": "Fee range displayed",
+        "value": "—"
+      },
+      {
+        "section": "LISTING & PROFILE",
+        "label": "Top search placement",
+        "value": "—"
+      },
+      {
+        "section": "REVIEWS & TRUST",
+        "label": "Display existing reviews",
+        "value": "✓"
+      },
+      {
+        "section": "REVIEWS & TRUST",
+        "label": "Invite families to review",
+        "value": "—"
+      },
+      {
+        "section": "REVIEWS & TRUST",
+        "label": "Respond to reviews publicly",
+        "value": "—"
+      },
+      {
+        "section": "REVIEWS & TRUST",
+        "label": "Flag & dispute reviews",
+        "value": "—"
+      },
+      {
+        "section": "VACANCIES & LEADS",
+        "label": "Job vacancy posts",
+        "value": "—"
+      },
+      {
+        "section": "VACANCIES & LEADS",
+        "label": "Enquiry lead notifications",
+        "value": "—"
+      },
+      {
+        "section": "VACANCIES & LEADS",
+        "label": "Enquiry & listing analytics",
+        "value": "—"
+      },
+      {
+        "section": "VACANCIES & LEADS",
+        "label": "Account management",
+        "value": "—"
+      }
+    ],
+    "features": [
+      "CQC data & rating displayed",
+      "Address, phone & contact info",
+      "Display existing reviews"
+    ],
+    "entitlements": {
+      "basicProfile": true,
+      "bio": true,
+      "specialismsLimit": null,
+      "qualifications": false,
+      "availability": false,
+      "featured": false,
+      "dbs": false,
+      "rightToWork": false,
+      "reviewsCollect": false,
+      "reviewsRespond": false,
+      "reviewsDispute": false,
+      "directMessages": false,
+      "jobAlerts": false,
+      "analytics": false,
+      "jobLimit": 0,
+      "shortlist": false,
+      "candidateFilters": false,
+      "galleryLimit": 0,
+      "virtualTour": false,
+      "serviceDetails": false,
+      "feeRange": false,
+      "team": false,
+      "carousel": false,
+      "multiBranch": false,
+      "integrations": false,
+      "apiAccess": false,
+      "monthlyReport": false,
+      "agencyBadge": false
+    },
+    "displayOrder": 10
+  },
+  {
+    "id": "HOME_ENHANCED",
+    "category": "CARE_HOME",
+    "tier": "Enhanced",
+    "title": "Care home Enhanced",
+    "subtitle": "For residential, nursing, and specialist care homes",
+    "pricePence": 7900,
+    "annualPricePence": 79000,
+    "trialMonths": 6,
+    "currency": "GBP",
+    "interval": "month",
+    "defaultRole": "CARE_SEEKER",
+    "featureRows": [
+      {
+        "section": "LISTING & PROFILE",
+        "label": "CQC data & rating displayed",
+        "value": "✓"
+      },
+      {
+        "section": "LISTING & PROFILE",
+        "label": "Address, phone & contact info",
+        "value": "✓"
+      },
+      {
+        "section": "LISTING & PROFILE",
+        "label": "Photo gallery",
+        "value": "Up to 20"
+      },
+      {
+        "section": "LISTING & PROFILE",
+        "label": "Virtual tour embed",
+        "value": "—"
+      },
+      {
+        "section": "LISTING & PROFILE",
+        "label": "Services & specialisms detail",
+        "value": "✓"
+      },
+      {
+        "section": "LISTING & PROFILE",
+        "label": "Fee range displayed",
+        "value": "✓"
+      },
+      {
+        "section": "LISTING & PROFILE",
+        "label": "Top search placement",
+        "value": "—"
+      },
+      {
+        "section": "REVIEWS & TRUST",
+        "label": "Display existing reviews",
+        "value": "✓"
+      },
+      {
+        "section": "REVIEWS & TRUST",
+        "label": "Invite families to review",
+        "value": "✓"
+      },
+      {
+        "section": "REVIEWS & TRUST",
+        "label": "Respond to reviews publicly",
+        "value": "✓"
+      },
+      {
+        "section": "REVIEWS & TRUST",
+        "label": "Flag & dispute reviews",
+        "value": "✓"
+      },
+      {
+        "section": "VACANCIES & LEADS",
+        "label": "Job vacancy posts",
+        "value": "Up to 3"
+      },
+      {
+        "section": "VACANCIES & LEADS",
+        "label": "Enquiry lead notifications",
+        "value": "✓"
+      },
+      {
+        "section": "VACANCIES & LEADS",
+        "label": "Enquiry & listing analytics",
+        "value": "Basic"
+      },
+      {
+        "section": "VACANCIES & LEADS",
+        "label": "Account management",
+        "value": "Email support"
+      }
+    ],
+    "features": [
+      "CQC data & rating displayed",
+      "Address, phone & contact info",
+      "Photo gallery: Up to 20",
+      "Services & specialisms detail",
+      "Fee range displayed",
+      "Display existing reviews",
+      "Invite families to review",
+      "Respond to reviews publicly",
+      "Flag & dispute reviews",
+      "Job vacancy posts: Up to 3",
+      "Enquiry lead notifications",
+      "Enquiry & listing analytics: Basic",
+      "Account management: Email support"
+    ],
+    "entitlements": {
+      "basicProfile": true,
+      "bio": true,
+      "specialismsLimit": null,
+      "qualifications": false,
+      "availability": false,
+      "featured": false,
+      "dbs": false,
+      "rightToWork": false,
+      "reviewsCollect": true,
+      "reviewsRespond": true,
+      "reviewsDispute": true,
+      "directMessages": true,
+      "jobAlerts": false,
+      "analytics": true,
+      "jobLimit": 3,
+      "shortlist": false,
+      "candidateFilters": false,
+      "galleryLimit": 20,
+      "virtualTour": false,
+      "serviceDetails": true,
+      "feeRange": true,
+      "team": false,
+      "carousel": false,
+      "multiBranch": false,
+      "integrations": false,
+      "apiAccess": false,
+      "monthlyReport": false,
+      "agencyBadge": false
+    },
+    "displayOrder": 11
+  },
+  {
+    "id": "HOME_PREMIUM",
+    "category": "CARE_HOME",
+    "tier": "Premium",
+    "title": "Care home Premium",
+    "subtitle": "For residential, nursing, and specialist care homes",
+    "pricePence": 14900,
+    "annualPricePence": 149000,
+    "trialMonths": 6,
+    "currency": "GBP",
+    "interval": "month",
+    "defaultRole": "CARE_SEEKER",
+    "featureRows": [
+      {
+        "section": "LISTING & PROFILE",
+        "label": "CQC data & rating displayed",
+        "value": "✓"
+      },
+      {
+        "section": "LISTING & PROFILE",
+        "label": "Address, phone & contact info",
+        "value": "✓"
+      },
+      {
+        "section": "LISTING & PROFILE",
+        "label": "Photo gallery",
+        "value": "Unlimited"
+      },
+      {
+        "section": "LISTING & PROFILE",
+        "label": "Virtual tour embed",
+        "value": "✓"
+      },
+      {
+        "section": "LISTING & PROFILE",
+        "label": "Services & specialisms detail",
+        "value": "✓"
+      },
+      {
+        "section": "LISTING & PROFILE",
+        "label": "Fee range displayed",
+        "value": "✓"
+      },
+      {
+        "section": "LISTING & PROFILE",
+        "label": "Top search placement",
+        "value": "✓"
+      },
+      {
+        "section": "REVIEWS & TRUST",
+        "label": "Display existing reviews",
+        "value": "✓"
+      },
+      {
+        "section": "REVIEWS & TRUST",
+        "label": "Invite families to review",
+        "value": "✓"
+      },
+      {
+        "section": "REVIEWS & TRUST",
+        "label": "Respond to reviews publicly",
+        "value": "✓"
+      },
+      {
+        "section": "REVIEWS & TRUST",
+        "label": "Flag & dispute reviews",
+        "value": "✓"
+      },
+      {
+        "section": "VACANCIES & LEADS",
+        "label": "Job vacancy posts",
+        "value": "Unlimited"
+      },
+      {
+        "section": "VACANCIES & LEADS",
+        "label": "Enquiry lead notifications",
+        "value": "✓"
+      },
+      {
+        "section": "VACANCIES & LEADS",
+        "label": "Enquiry & listing analytics",
+        "value": "Full + monthly report"
+      },
+      {
+        "section": "VACANCIES & LEADS",
+        "label": "Account management",
+        "value": "Dedicated manager"
+      }
+    ],
+    "features": [
+      "CQC data & rating displayed",
+      "Address, phone & contact info",
+      "Photo gallery: Unlimited",
+      "Virtual tour embed",
+      "Services & specialisms detail",
+      "Fee range displayed",
+      "Top search placement",
+      "Display existing reviews",
+      "Invite families to review",
+      "Respond to reviews publicly",
+      "Flag & dispute reviews",
+      "Job vacancy posts: Unlimited",
+      "Enquiry lead notifications",
+      "Enquiry & listing analytics: Full + monthly report",
+      "Account management: Dedicated manager"
+    ],
+    "entitlements": {
+      "basicProfile": true,
+      "bio": true,
+      "specialismsLimit": null,
+      "qualifications": false,
+      "availability": false,
+      "featured": true,
+      "dbs": false,
+      "rightToWork": false,
+      "reviewsCollect": true,
+      "reviewsRespond": true,
+      "reviewsDispute": true,
+      "directMessages": true,
+      "jobAlerts": false,
+      "analytics": true,
+      "jobLimit": null,
+      "shortlist": false,
+      "candidateFilters": false,
+      "galleryLimit": null,
+      "virtualTour": true,
+      "serviceDetails": true,
+      "feeRange": true,
+      "team": false,
+      "carousel": false,
+      "multiBranch": false,
+      "integrations": false,
+      "apiAccess": false,
+      "monthlyReport": false,
+      "agencyBadge": false
+    },
+    "displayOrder": 12
+  },
+  {
+    "id": "AGENCY_STARTER",
+    "category": "CARE_AGENCY",
+    "tier": "Starter",
+    "title": "Care agency Starter",
+    "subtitle": "For domiciliary, live-in, and specialist care agencies",
+    "pricePence": 4900,
+    "annualPricePence": 49000,
+    "trialMonths": 6,
+    "currency": "GBP",
+    "interval": "month",
+    "defaultRole": "CARE_SEEKER",
+    "featureRows": [
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Agency profile page",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Coverage area map",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "CQC rating displayed",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Photo gallery & team section",
+        "value": "—"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Featured agency badge",
+        "value": "—"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Homepage carousel placement",
+        "value": "—"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Top-of-search placement",
+        "value": "—"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Multi-branch management",
+        "value": "—"
+      },
+      {
+        "section": "JOBS & RECRUITMENT",
+        "label": "Job postings",
+        "value": "Up to 3"
+      },
+      {
+        "section": "JOBS & RECRUITMENT",
+        "label": "Candidate shortlisting tool",
+        "value": "—"
+      },
+      {
+        "section": "JOBS & RECRUITMENT",
+        "label": "Filter applicants by DBS & quals",
+        "value": "—"
+      },
+      {
+        "section": "JOBS & RECRUITMENT",
+        "label": "ATS / CRM integration",
+        "value": "—"
+      },
+      {
+        "section": "JOBS & RECRUITMENT",
+        "label": "API access",
+        "value": "—"
+      },
+      {
+        "section": "REVIEWS & REPUTATION",
+        "label": "Collect & display reviews",
+        "value": "✓"
+      },
+      {
+        "section": "REVIEWS & REPUTATION",
+        "label": "Respond to reviews publicly",
+        "value": "✓"
+      },
+      {
+        "section": "REVIEWS & REPUTATION",
+        "label": "Flag & dispute reviews",
+        "value": "✓"
+      },
+      {
+        "section": "ANALYTICS & SUPPORT",
+        "label": "Enquiry lead dashboard",
+        "value": "Basic"
+      },
+      {
+        "section": "ANALYTICS & SUPPORT",
+        "label": "Monthly performance report",
+        "value": "—"
+      },
+      {
+        "section": "ANALYTICS & SUPPORT",
+        "label": "Account management",
+        "value": "Email only"
+      }
+    ],
+    "features": [
+      "Agency profile page",
+      "Coverage area map",
+      "CQC rating displayed",
+      "Job postings: Up to 3",
+      "Collect & display reviews",
+      "Respond to reviews publicly",
+      "Flag & dispute reviews",
+      "Enquiry lead dashboard: Basic",
+      "Account management: Email only"
+    ],
+    "entitlements": {
+      "basicProfile": true,
+      "bio": true,
+      "specialismsLimit": null,
+      "qualifications": false,
+      "availability": false,
+      "featured": false,
+      "dbs": false,
+      "rightToWork": false,
+      "reviewsCollect": true,
+      "reviewsRespond": true,
+      "reviewsDispute": true,
+      "directMessages": true,
+      "jobAlerts": false,
+      "analytics": true,
+      "jobLimit": 3,
+      "shortlist": false,
+      "candidateFilters": false,
+      "galleryLimit": 0,
+      "virtualTour": false,
+      "serviceDetails": false,
+      "feeRange": false,
+      "team": false,
+      "carousel": false,
+      "multiBranch": false,
+      "integrations": false,
+      "apiAccess": false,
+      "monthlyReport": false,
+      "agencyBadge": false
+    },
+    "displayOrder": 20
+  },
+  {
+    "id": "AGENCY_GROWTH",
+    "category": "CARE_AGENCY",
+    "tier": "Growth",
+    "title": "Care agency Growth",
+    "subtitle": "For domiciliary, live-in, and specialist care agencies",
+    "pricePence": 12900,
+    "annualPricePence": 129000,
+    "trialMonths": 6,
+    "currency": "GBP",
+    "interval": "month",
+    "defaultRole": "CARE_SEEKER",
+    "featureRows": [
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Agency profile page",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Coverage area map",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "CQC rating displayed",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Photo gallery & team section",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Featured agency badge",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Homepage carousel placement",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Top-of-search placement",
+        "value": "—"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Multi-branch management",
+        "value": "—"
+      },
+      {
+        "section": "JOBS & RECRUITMENT",
+        "label": "Job postings",
+        "value": "Up to 10"
+      },
+      {
+        "section": "JOBS & RECRUITMENT",
+        "label": "Candidate shortlisting tool",
+        "value": "✓"
+      },
+      {
+        "section": "JOBS & RECRUITMENT",
+        "label": "Filter applicants by DBS & quals",
+        "value": "✓"
+      },
+      {
+        "section": "JOBS & RECRUITMENT",
+        "label": "ATS / CRM integration",
+        "value": "—"
+      },
+      {
+        "section": "JOBS & RECRUITMENT",
+        "label": "API access",
+        "value": "—"
+      },
+      {
+        "section": "REVIEWS & REPUTATION",
+        "label": "Collect & display reviews",
+        "value": "✓"
+      },
+      {
+        "section": "REVIEWS & REPUTATION",
+        "label": "Respond to reviews publicly",
+        "value": "✓"
+      },
+      {
+        "section": "REVIEWS & REPUTATION",
+        "label": "Flag & dispute reviews",
+        "value": "✓"
+      },
+      {
+        "section": "ANALYTICS & SUPPORT",
+        "label": "Enquiry lead dashboard",
+        "value": "✓"
+      },
+      {
+        "section": "ANALYTICS & SUPPORT",
+        "label": "Monthly performance report",
+        "value": "—"
+      },
+      {
+        "section": "ANALYTICS & SUPPORT",
+        "label": "Account management",
+        "value": "Email & chat"
+      }
+    ],
+    "features": [
+      "Agency profile page",
+      "Coverage area map",
+      "CQC rating displayed",
+      "Photo gallery & team section",
+      "Featured agency badge",
+      "Homepage carousel placement",
+      "Job postings: Up to 10",
+      "Candidate shortlisting tool",
+      "Filter applicants by DBS & quals",
+      "Collect & display reviews",
+      "Respond to reviews publicly",
+      "Flag & dispute reviews",
+      "Enquiry lead dashboard",
+      "Account management: Email & chat"
+    ],
+    "entitlements": {
+      "basicProfile": true,
+      "bio": true,
+      "specialismsLimit": null,
+      "qualifications": false,
+      "availability": false,
+      "featured": false,
+      "dbs": false,
+      "rightToWork": false,
+      "reviewsCollect": true,
+      "reviewsRespond": true,
+      "reviewsDispute": true,
+      "directMessages": true,
+      "jobAlerts": false,
+      "analytics": true,
+      "jobLimit": 10,
+      "shortlist": true,
+      "candidateFilters": true,
+      "galleryLimit": 0,
+      "virtualTour": false,
+      "serviceDetails": false,
+      "feeRange": false,
+      "team": true,
+      "carousel": true,
+      "multiBranch": false,
+      "integrations": false,
+      "apiAccess": false,
+      "monthlyReport": false,
+      "agencyBadge": true
+    },
+    "displayOrder": 21
+  },
+  {
+    "id": "AGENCY_GROWTH_PLUS",
+    "category": "CARE_AGENCY",
+    "tier": "Growth+",
+    "title": "Care agency Growth+",
+    "subtitle": "For domiciliary, live-in, and specialist care agencies",
+    "pricePence": 12900,
+    "annualPricePence": 129000,
+    "trialMonths": 6,
+    "currency": "GBP",
+    "interval": "month",
+    "defaultRole": "CARE_SEEKER",
+    "featureRows": [
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Agency profile page",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Coverage area map",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "CQC rating displayed",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Photo gallery & team section",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Featured agency badge",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Homepage carousel placement",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Top-of-search placement",
+        "value": "—"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Multi-branch management",
+        "value": "—"
+      },
+      {
+        "section": "JOBS & RECRUITMENT",
+        "label": "Job postings",
+        "value": "Up to 10"
+      },
+      {
+        "section": "JOBS & RECRUITMENT",
+        "label": "Candidate shortlisting tool",
+        "value": "✓"
+      },
+      {
+        "section": "JOBS & RECRUITMENT",
+        "label": "Filter applicants by DBS & quals",
+        "value": "✓"
+      },
+      {
+        "section": "JOBS & RECRUITMENT",
+        "label": "ATS / CRM integration",
+        "value": "—"
+      },
+      {
+        "section": "JOBS & RECRUITMENT",
+        "label": "API access",
+        "value": "—"
+      },
+      {
+        "section": "REVIEWS & REPUTATION",
+        "label": "Collect & display reviews",
+        "value": "✓"
+      },
+      {
+        "section": "REVIEWS & REPUTATION",
+        "label": "Respond to reviews publicly",
+        "value": "✓"
+      },
+      {
+        "section": "REVIEWS & REPUTATION",
+        "label": "Flag & dispute reviews",
+        "value": "✓"
+      },
+      {
+        "section": "ANALYTICS & SUPPORT",
+        "label": "Enquiry lead dashboard",
+        "value": "✓"
+      },
+      {
+        "section": "ANALYTICS & SUPPORT",
+        "label": "Monthly performance report",
+        "value": "—"
+      },
+      {
+        "section": "ANALYTICS & SUPPORT",
+        "label": "Account management",
+        "value": "Email & chat"
+      }
+    ],
+    "features": [
+      "Agency profile page",
+      "Coverage area map",
+      "CQC rating displayed",
+      "Photo gallery & team section",
+      "Featured agency badge",
+      "Homepage carousel placement",
+      "Job postings: Up to 10",
+      "Candidate shortlisting tool",
+      "Filter applicants by DBS & quals",
+      "Collect & display reviews",
+      "Respond to reviews publicly",
+      "Flag & dispute reviews",
+      "Enquiry lead dashboard",
+      "Account management: Email & chat"
+    ],
+    "entitlements": {
+      "basicProfile": true,
+      "bio": true,
+      "specialismsLimit": null,
+      "qualifications": false,
+      "availability": false,
+      "featured": false,
+      "dbs": false,
+      "rightToWork": false,
+      "reviewsCollect": true,
+      "reviewsRespond": true,
+      "reviewsDispute": true,
+      "directMessages": true,
+      "jobAlerts": false,
+      "analytics": true,
+      "jobLimit": 10,
+      "shortlist": true,
+      "candidateFilters": true,
+      "galleryLimit": 0,
+      "virtualTour": false,
+      "serviceDetails": false,
+      "feeRange": false,
+      "team": true,
+      "carousel": true,
+      "multiBranch": false,
+      "integrations": false,
+      "apiAccess": false,
+      "monthlyReport": false,
+      "agencyBadge": true
+    },
+    "displayOrder": 22
+  },
+  {
+    "id": "AGENCY_ENTERPRISE",
+    "category": "CARE_AGENCY",
+    "tier": "Enterprise",
+    "title": "Care agency Enterprise",
+    "subtitle": "For domiciliary, live-in, and specialist care agencies",
+    "pricePence": 24900,
+    "annualPricePence": 249000,
+    "trialMonths": 6,
+    "currency": "GBP",
+    "interval": "month",
+    "defaultRole": "CARE_SEEKER",
+    "featureRows": [
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Agency profile page",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Coverage area map",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "CQC rating displayed",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Photo gallery & team section",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Featured agency badge",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Homepage carousel placement",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Top-of-search placement",
+        "value": "✓"
+      },
+      {
+        "section": "AGENCY PROFILE",
+        "label": "Multi-branch management",
+        "value": "✓"
+      },
+      {
+        "section": "JOBS & RECRUITMENT",
+        "label": "Job postings",
+        "value": "Unlimited"
+      },
+      {
+        "section": "JOBS & RECRUITMENT",
+        "label": "Candidate shortlisting tool",
+        "value": "✓"
+      },
+      {
+        "section": "JOBS & RECRUITMENT",
+        "label": "Filter applicants by DBS & quals",
+        "value": "✓"
+      },
+      {
+        "section": "JOBS & RECRUITMENT",
+        "label": "ATS / CRM integration",
+        "value": "✓"
+      },
+      {
+        "section": "JOBS & RECRUITMENT",
+        "label": "API access",
+        "value": "✓"
+      },
+      {
+        "section": "REVIEWS & REPUTATION",
+        "label": "Collect & display reviews",
+        "value": "✓"
+      },
+      {
+        "section": "REVIEWS & REPUTATION",
+        "label": "Respond to reviews publicly",
+        "value": "✓"
+      },
+      {
+        "section": "REVIEWS & REPUTATION",
+        "label": "Flag & dispute reviews",
+        "value": "✓"
+      },
+      {
+        "section": "ANALYTICS & SUPPORT",
+        "label": "Enquiry lead dashboard",
+        "value": "✓"
+      },
+      {
+        "section": "ANALYTICS & SUPPORT",
+        "label": "Monthly performance report",
+        "value": "✓"
+      },
+      {
+        "section": "ANALYTICS & SUPPORT",
+        "label": "Account management",
+        "value": "Dedicated manager"
+      }
+    ],
+    "features": [
+      "Agency profile page",
+      "Coverage area map",
+      "CQC rating displayed",
+      "Photo gallery & team section",
+      "Featured agency badge",
+      "Homepage carousel placement",
+      "Top-of-search placement",
+      "Multi-branch management",
+      "Job postings: Unlimited",
+      "Candidate shortlisting tool",
+      "Filter applicants by DBS & quals",
+      "ATS / CRM integration",
+      "API access",
+      "Collect & display reviews",
+      "Respond to reviews publicly",
+      "Flag & dispute reviews",
+      "Enquiry lead dashboard",
+      "Monthly performance report",
+      "Account management: Dedicated manager"
+    ],
+    "entitlements": {
+      "basicProfile": true,
+      "bio": true,
+      "specialismsLimit": null,
+      "qualifications": false,
+      "availability": false,
+      "featured": true,
+      "dbs": false,
+      "rightToWork": false,
+      "reviewsCollect": true,
+      "reviewsRespond": true,
+      "reviewsDispute": true,
+      "directMessages": true,
+      "jobAlerts": false,
+      "analytics": true,
+      "jobLimit": null,
+      "shortlist": true,
+      "candidateFilters": true,
+      "galleryLimit": 0,
+      "virtualTour": false,
+      "serviceDetails": false,
+      "feeRange": false,
+      "team": true,
+      "carousel": true,
+      "multiBranch": true,
+      "integrations": true,
+      "apiAccess": true,
+      "monthlyReport": true,
+      "agencyBadge": true
+    },
+    "displayOrder": 23
+  }
+]

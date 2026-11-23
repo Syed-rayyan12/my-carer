@@ -1,112 +1,257 @@
 "use client";
+import { usePathname } from "next/navigation";
+import { loadAdminPage } from "./admin-api";
+import type { Pagination } from "@/components/platform/workspace-api";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { usePersistentDashboardState } from "@/components/dashboard/usePersistentDashboardState";
-import { initialAdminData, isAdminData, type AdminSection, type AdminUserStatus, type AdminData } from "./adminData";
-import { getAdminCaregivers, type AdminCaregiver } from "./caregivers/adminCaregiverData";
-import { getAdminCareSeekers, type AdminCareSeeker } from "./care-seekers/adminCareSeekerData";
-
-export type AdminDialog = { type: "user" | "caregiver" | "approve" | "reject"; userId: string } | { type: "section"; section: AdminSection } | null;
-type AdminContextValue = {
-  data: AdminData; ready: boolean; storageError: boolean;
-  search: string; setSearch: (search: string) => void;
-  mobileMenu: boolean; setMobileMenu: (open: boolean) => void;
-  notificationsRead: boolean; setNotificationsRead: (read: boolean) => void;
-  dialog: AdminDialog; setDialog: (dialog: AdminDialog) => void;
-  notice: string; setUserStatus: (id: string, status: AdminUserStatus, reason?: string) => void;
-  updateCaregiver: (caregiver: AdminCaregiver) => void;
-  setCaregiverSuspended: (id: string, suspended: boolean) => void;
-  deleteCaregiver: (id: string) => void;
-  updateCareSeeker: (seeker: AdminCareSeeker) => void;
-  setCareSeekerSuspended: (id: string, suspended: boolean) => void;
-  deleteCareSeeker: (id: string) => void;
-};
-
-const AdminContext = createContext<AdminContextValue | null>(null);
-
-export function AdminDashboardProvider({ children }: { children: ReactNode }) {
-  const { value: data, setValue: setData, ready, storageError } = usePersistentDashboardState("my-carer-admin-overview", initialAdminData, isAdminData);
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import { useAuth } from "@/components/auth/AuthBoundary";
+import { accountApi } from "@/components/auth/auth-client";
+import type { AdminSection, AdminUserStatus } from "./adminData";
+import type { AdminCaregiver } from "./caregivers/adminCaregiverData";
+import type { AdminCareSeeker } from "./care-seekers/adminCareSeekerData";
+import { emptySnapshot, mapAdminData, type AdminSnapshot } from "./admin-live";
+export type AdminDialog =
+  | { type: "user" | "caregiver" | "approve" | "reject"; userId: string }
+  | { type: "section"; section: AdminSection }
+  | null;
+function useLiveDashboard() {
+  const auth = useAuth()!;
+  const pathname = usePathname();
+  const [pageState, setPageState] = useState({ pathname, page: 1 });
+  const page = pageState.pathname === pathname ? pageState.page : 1;
+  const setPage = (next: number) =>
+    setPageState({ pathname, page: Math.max(1, next) });
+  const [pagination, setPagination] = useState<Pagination | null>(null);
+  const generation = useRef(0);
+  const invalidatePending = useCallback(() => {
+    generation.current++;
+  }, []);
+  const routeKey = pathname + ":" + page;
+  const [loadedFor, setLoadedFor] = useState("");
+  const [loadedSnapshot, setSnapshot] = useState<AdminSnapshot>(emptySnapshot);
+  const snapshot = loadedFor === routeKey ? loadedSnapshot : emptySnapshot;
+  const [ready, setReady] = useState(false);
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const saving = useRef(false);
   const [search, setSearch] = useState("");
   const [mobileMenu, setMobileMenu] = useState(false);
   const [notificationsRead, setNotificationsRead] = useState(false);
   const [dialog, setDialog] = useState<AdminDialog>(null);
   const [notice, setNotice] = useState("");
-
+  const refresh = useCallback(async () => {
+    const current = ++generation.current;
+    const result = await loadAdminPage(pathname, page);
+    if (current !== generation.current) return;
+    setSnapshot(result.snapshot);
+    setLoadedFor(routeKey);
+    setPagination(result.pagination);
+    setError("");
+    setNotice("");
+    setReady(true);
+  }, [pathname, page, routeKey]);
+  const currentRefresh = useRef(refresh);
   useEffect(() => {
-    function escape(event: KeyboardEvent) { if (event.key === "Escape") setMobileMenu(false); }
+    currentRefresh.current = refresh;
+  }, [refresh]);
+  useEffect(() => {
+    let active = true;
+    void refresh().catch((issue) => {
+      if (active) {
+        setError(
+          issue instanceof Error ? issue.message : "Unable to load page",
+        );
+        setSnapshot(emptySnapshot);
+        setLoadedFor(routeKey);
+        setReady(true);
+      }
+    });
+    return () => {
+      active = false;
+      invalidatePending();
+    };
+  }, [refresh, routeKey, invalidatePending]);
+  useEffect(() => {
+    const onFocus = () => {
+      refresh().catch((issue) =>
+        setError(issue instanceof Error ? issue.message : "Unable to refresh"),
+      );
+    };
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [refresh]);
+  useEffect(() => {
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileMenu(false);
+    };
     document.addEventListener("keydown", escape);
     return () => document.removeEventListener("keydown", escape);
   }, []);
-
-  function setUserStatus(id: string, status: AdminUserStatus, reason?: string) {
-    if (!ready) return;
-    const rejectionReason = reason?.trim();
-    if (status === "Rejected" && !rejectionReason) return;
-    const user = data.users.find(item => item.id === id) ?? getAdminCaregivers(data).find(item => item.id === id) ?? getAdminCareSeekers(data).find(item => item.id === id);
-    if (!user || user.status === status) return;
-    setData(current => ({
-      ...current,
-      users: current.users.map(item => item.id === id ? { ...item, status, rejectionReason: status === "Rejected" ? rejectionReason : undefined } : item),
-      careSeekers: getAdminCareSeekers(current).map(item => item.id === id ? { ...item, status, rejectionReason: status === "Rejected" ? rejectionReason : undefined } : item),
-      caregivers: getAdminCaregivers(current).map(item => item.id === id ? { ...item, status, rejectionReason: status === "Rejected" ? rejectionReason : undefined, verification: status === "Active" ? "Verified" : status === "Rejected" ? "Rejected" : item.verification } : item),
-      activity: [{ id: crypto.randomUUID(), kind: "registration" as const, text: `${user.name} was ${status === "Active" ? "approved" : status === "Suspended" ? "suspended" : status === "Pending" ? "set to pending" : "rejected"} by Admin`, time: "Just now" }, ...current.activity].slice(0, 10),
-    }));
-    setNotice(`${user.name} ${status === "Active" ? "approved" : status === "Suspended" ? "suspended" : status === "Pending" ? "set to pending" : "rejected"} in this local preview.`);
-  }
-
-  function updateCaregiver(caregiver: AdminCaregiver) {
-    if (!ready) return;
-    setData(current => ({ ...current, caregivers: getAdminCaregivers(current).map(item => item.id === caregiver.id ? caregiver : item), users: current.users.map(item => item.id === caregiver.id ? { ...item, name: caregiver.name, initials: caregiver.initials, email: caregiver.email, location: caregiver.location } : item), activity: [{ id: crypto.randomUUID(), kind: "profile" as const, text: `${caregiver.name}'s profile was updated by Admin`, time: "Just now" }, ...current.activity].slice(0, 10) }));
-    setNotice("Caregiver profile saved on this device.");
-  }
-
-  function setCaregiverSuspended(id: string, suspended: boolean) {
-    if (!ready) return;
-    const caregiver = getAdminCaregivers(data).find(item => item.id === id);
-    if (!caregiver || (caregiver.status === "Suspended") === suspended) return;
-    const status = suspended ? "Suspended" : caregiver.suspendedFrom ?? "Active";
-    const suspendedFrom = suspended && caregiver.status !== "Suspended" ? caregiver.status : undefined;
-    setData(current => ({ ...current, caregivers: getAdminCaregivers(current).map(item => item.id === id ? { ...item, status, suspendedFrom } : item), users: current.users.map(item => item.id === id ? { ...item, status } : item), activity: [{ id: crypto.randomUUID(), kind: "profile" as const, text: `${caregiver.name}'s account was ${suspended ? "suspended" : "reactivated"} by Admin`, time: "Just now" }, ...current.activity].slice(0, 10) }));
-    setNotice(`Account ${suspended ? "suspended" : "reactivated"} in this local preview.`);
-  }
-
-  function deleteCaregiver(id: string) {
-    if (!ready) return;
-    const caregiver = getAdminCaregivers(data).find(item => item.id === id);
-    if (!caregiver) return;
-    setData(current => ({ ...current, caregivers: getAdminCaregivers(current).filter(item => item.id !== id), users: current.users.filter(item => item.id !== id), activity: [{ id: crypto.randomUUID(), kind: "profile" as const, text: `${caregiver.name}'s account was removed from the local preview`, time: "Just now" }, ...current.activity].slice(0, 10) }));
-    setNotice("Caregiver removed from this local preview.");
-  }
-
-  function updateCareSeeker(seeker: AdminCareSeeker) {
-    if (!ready) return;
-    setData(current => ({ ...current, careSeekers: getAdminCareSeekers(current).map(item => item.id === seeker.id ? seeker : item), users: current.users.map(item => item.id === seeker.id ? { ...item, name: seeker.name, initials: seeker.initials, email: seeker.email, location: seeker.location } : item), activity: [{ id: crypto.randomUUID(), kind: "profile" as const, text: `${seeker.name}'s care seeker profile was updated by Admin`, time: "Just now" }, ...current.activity].slice(0, 10) }));
-    setNotice("Care seeker profile saved on this device.");
-  }
-
-  function setCareSeekerSuspended(id: string, suspended: boolean) {
-    if (!ready) return;
-    const seeker = getAdminCareSeekers(data).find(item => item.id === id);
-    if (!seeker || (seeker.status === "Suspended") === suspended) return;
-    const status = suspended ? "Suspended" : seeker.suspendedFrom ?? "Active";
-    const suspendedFrom = suspended && seeker.status !== "Suspended" ? seeker.status : undefined;
-    setData(current => ({ ...current, careSeekers: getAdminCareSeekers(current).map(item => item.id === id ? { ...item, status, suspendedFrom } : item), users: current.users.map(item => item.id === id ? { ...item, status } : item), activity: [{ id: crypto.randomUUID(), kind: "profile" as const, text: `${seeker.name}'s account was ${suspended ? "suspended" : "reactivated"} by Admin`, time: "Just now" }, ...current.activity].slice(0, 10) }));
-    setNotice(`Care seeker account ${suspended ? "suspended" : "reactivated"} in this local preview.`);
-  }
-
-  function deleteCareSeeker(id: string) {
-    if (!ready) return;
-    const seeker = getAdminCareSeekers(data).find(item => item.id === id);
-    if (!seeker) return;
-    setData(current => ({ ...current, careSeekers: getAdminCareSeekers(current).filter(item => item.id !== id), users: current.users.filter(item => item.id !== id), activity: [{ id: crypto.randomUUID(), kind: "profile" as const, text: `${seeker.name}'s care seeker account was removed from the local preview`, time: "Just now" }, ...current.activity].slice(0, 10) }));
-    setNotice("Care seeker removed from this local preview.");
-  }
-
-  return <AdminContext.Provider value={{ data, ready, storageError, search, setSearch, mobileMenu, setMobileMenu, notificationsRead, setNotificationsRead, dialog, setDialog, notice, setUserStatus, updateCaregiver, setCaregiverSuspended, deleteCaregiver, updateCareSeeker, setCareSeekerSuspended, deleteCareSeeker }}>{children}</AdminContext.Provider>;
+  const data = useMemo(() => mapAdminData(snapshot), [snapshot]);
+  const mutate = async (
+    path: string,
+    body: unknown,
+    method: "POST" | "PATCH" | "DELETE" = "PATCH",
+  ) => {
+    if (saving.current) return false;
+    saving.current = true;
+    setBusy(true);
+    setError("");
+    setNotice("");
+    try {
+      await accountApi(path, { method, body, csrfToken: auth.csrfToken });
+      await currentRefresh.current();
+      setNotice("Changes saved to the database.");
+      return true;
+    } catch (issue) {
+      setError(
+        issue instanceof Error ? issue.message : "Unable to save changes",
+      );
+      return false;
+    } finally {
+      saving.current = false;
+      setBusy(false);
+    }
+  };
+  const setUserStatus = async (
+    id: string,
+    status: AdminUserStatus,
+    reason?: string,
+  ) => {
+    if (status === "Pending") {
+      setError("Accounts cannot be reset to pending.");
+      return false;
+    }
+    return mutate(`admin/registrations/${id}/status`, {
+      status: status.toUpperCase(),
+      ...(reason?.trim() ? { reason: reason.trim() } : {}),
+    });
+  };
+  const profileBody = (person: AdminCaregiver | AdminCareSeeker) => {
+    const current = snapshot.users.find((item) => item.id === person.id);
+    if (current && person.email !== current.email)
+      throw new Error("Sign-in email changes are not supported here.");
+    const [firstName, ...last] = person.name.trim().split(/\s+/);
+    if (!last.length) throw new Error("Enter both first and last name.");
+    return {
+      firstName,
+      lastName: last.join(" "),
+      location: person.location,
+      phone:
+        person.type === "Caregiver"
+          ? (person.profile?.phone ?? "")
+          : person.phone,
+    };
+  };
+  const updateCaregiver = async (person: AdminCaregiver) => {
+    try {
+      const current = data.caregivers?.find((item) => item.id === person.id);
+      if (
+        (person.priority ?? "Normal") !== (current?.priority ?? "Normal") ||
+        person.profile?.mileageRate !== current?.profile?.mileageRate ||
+        person.profile?.experience !== current?.profile?.experience
+      )
+        throw new Error(
+          "Priority, mileage and experience editing are not supported by the current backend.",
+        );
+      return await mutate(`platform/admin/users/${person.id}/profile`, {
+        ...profileBody(person),
+        hourlyRatePence: Math.round((person.profile?.hourlyRate ?? 0) * 100),
+        availability: person.profile?.availability ?? "",
+        ...(person.profile?.availabilitySchedule ? { availabilitySchedule: { weekly: person.profile.availabilitySchedule.weekly, minimumVisitMinutes: person.profile.availabilitySchedule.minimumVisitMinutes ?? 30 } } : {}),
+        services: person.profile?.careTypes.join(", ") ?? "",
+        qualifications: person.profile?.qualifications.join("\n") ?? "",
+      });
+    } catch (issue) {
+      setError(issue instanceof Error ? issue.message : "Unable to save");
+      return false;
+    }
+  };
+  const updateCareSeeker = async (person: AdminCareSeeker) => {
+    try {
+      const current = data.careSeekers?.find((item) => item.id === person.id);
+      if (
+        JSON.stringify(current?.requirement) !==
+        JSON.stringify(person.requirement)
+      )
+        throw new Error(
+          "Edit care requirements from the Care Requests section.",
+        );
+      return await mutate(
+        `platform/admin/users/${person.id}/profile`,
+        profileBody(person),
+      );
+    } catch (issue) {
+      setError(issue instanceof Error ? issue.message : "Unable to save");
+      return false;
+    }
+  };
+  const setCaregiverSuspended = (id: string, suspended: boolean) =>
+    setUserStatus(
+      id,
+      suspended ? "Suspended" : "Active",
+      suspended ? "Suspended by administrator" : undefined,
+    );
+  const setCareSeekerSuspended = setCaregiverSuspended;
+  const deleteCaregiver = (_id: string) => {
+    void _id;
+    setError(
+      "Account deletion is not enabled. Use Suspend Account to revoke access.",
+    );
+  };
+  const deleteCareSeeker = deleteCaregiver;
+  return {
+    pagination,
+    page,
+    setPage,
+    data,
+    snapshot,
+    ready: ready && loadedFor === routeKey,
+    storageError: false,
+    error: loadedFor === routeKey ? error : "",
+    setError,
+    busy,
+    search,
+    setSearch,
+    mobileMenu,
+    setMobileMenu,
+    notificationsRead,
+    setNotificationsRead,
+    dialog,
+    setDialog,
+    notice: loadedFor === routeKey ? notice : "",
+    refresh,
+    mutate,
+    setUserStatus,
+    updateCaregiver,
+    updateCareSeeker,
+    setCaregiverSuspended,
+    setCareSeekerSuspended,
+    deleteCaregiver,
+    deleteCareSeeker,
+  };
 }
-
+const AdminContext = createContext<ReturnType<typeof useLiveDashboard> | null>(
+  null,
+);
+export function AdminDashboardProvider({ children }: { children: ReactNode }) {
+  const value = useLiveDashboard();
+  return (
+    <AdminContext.Provider value={value}>{children}</AdminContext.Provider>
+  );
+}
 export function useAdminDashboard() {
-  const context = useContext(AdminContext);
-  if (!context) throw new Error("Admin components must be inside AdminDashboardProvider");
-  return context;
+  const value = useContext(AdminContext);
+  if (!value)
+    throw new Error("Admin components must be inside AdminDashboardProvider");
+  return value;
 }

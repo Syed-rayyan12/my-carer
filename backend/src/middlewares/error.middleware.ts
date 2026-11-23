@@ -3,6 +3,7 @@ import { Prisma } from '../generated/prisma/client.js';
 import { env } from '../config/env.js';
 import { logger } from '../config/logger.js';
 import { ApiError } from '../utils/ApiError.js';
+import { ZodError } from 'zod';
 
 export const notFound: RequestHandler = (_req, _res, next) => {
   next(new ApiError(404, 'Route not found'));
@@ -12,7 +13,12 @@ export const errorHandler: ErrorRequestHandler = (error: unknown, req, res, next
   let statusCode = 500;
   let message = 'Internal server error';
 
-  if (error instanceof ApiError) {
+  if (error instanceof ZodError) {
+    statusCode = 400;
+    message = error.issues
+      .map((issue) => `${issue.path.join('.') || 'body'}: ${issue.message}`)
+      .join('; ');
+  } else if (error instanceof ApiError) {
     statusCode = error.statusCode;
     if (error.isOperational || env.NODE_ENV !== 'production') message = error.message;
   } else if (error instanceof Prisma.PrismaClientKnownRequestError) {

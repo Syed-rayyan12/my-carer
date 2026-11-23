@@ -10,6 +10,8 @@ import HowItWorksSection from "@/components/website/HowItWorksSection";
 import TechnologySection from "@/components/website/TechnologySection";
 import TestimonialsSection from "@/components/website/TestimonialsSection";
 import JournalSection from "@/components/website/JournalSection";
+import FeaturedOrganisations from '@/components/platform/FeaturedOrganisations';
+import LivePricing from '@/components/platform/LivePricing';
 import NewsletterSection from "@/components/website/NewsletterSection";
 import WebsiteFooter from "@/components/shared/WebsiteFooter";
 
@@ -63,6 +65,8 @@ export default function HomePage() {
       <CareCTASection />
       <HowItWorksSection />
       <TechnologySection />
+      <LivePricing home />
+      <FeaturedOrganisations />
       <TestimonialsSection />
       <JournalSection />
       <NewsletterSection />

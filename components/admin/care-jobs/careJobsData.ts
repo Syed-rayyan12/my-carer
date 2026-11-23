@@ -1,5 +1,6 @@
+import { isCarePriority, isCareNeededDate, type CarePriority } from "../shared/careUrgencyData";
 export type CareJobStatus = "Pending" | "Active" | "Removed";
-export type AdminCareJob = { id: string; title: string; careType: string; date: string; location: string; postedBy: string; applicants: number; status: CareJobStatus; payRate: string; schedule: string; description: string; requirements: string[] };
+export type AdminCareJob = { priority?: CarePriority; careNeededBy?: string; id: string; title: string; careType: string; date: string; location: string; postedBy: string; applicants: number; status: CareJobStatus; payRate: string; schedule: string; description: string; requirements: string[] };
 export const initialCareJobs: AdminCareJob[] = [
   { id: "dementia-caregiver", title: "Dementia Caregiver Required", careType: "Dementia Care", date: "5 Sep 2026", location: "London", postedBy: "John Brown", applicants: 0, status: "Pending", payRate: "£18 – £21 / hour", schedule: "Daily, 9am – 1pm", description: "We are looking for a patient, experienced caregiver to support my wife, who has early-stage dementia, with daily routines, gentle activities and companionship.", requirements: ["2+ years dementia care experience", "Enhanced DBS", "Non-smoker", "Comfortable with light meal preparation"] },
   { id: "live-in-carer", title: "Live-in Carer for Elderly Mother", careType: "Live-in Care", date: "2 Jun 2026", location: "London", postedBy: "Helen Carter", applicants: 3, status: "Active", payRate: "£850 / week", schedule: "Live-in, Monday to Friday", description: "Seeking a compassionate live-in carer to support my elderly mother with personal care, meals and companionship.", requirements: ["Previous live-in care experience", "Enhanced DBS", "Confident with meal preparation"] },
@@ -9,9 +10,11 @@ export const initialCareJobs: AdminCareJob[] = [
   { id: "personal-care-assistant", title: "Personal Care Assistant", careType: "Disability Support", date: "28 Aug 2026", location: "Birmingham", postedBy: "Aisha Rahman", applicants: 1, status: "Active", payRate: "£18 / hour", schedule: "Monday to Friday, mornings", description: "Personal care and practical daily support for an adult living with a disability.", requirements: ["Personal care experience", "Enhanced DBS", "Respectful and reliable"] },
 ];
 export function isCareJobs(value: unknown): value is AdminCareJob[] {
-  return Array.isArray(value) && value.every(job => job && typeof job === "object" && ["id", "title", "careType", "date", "location", "postedBy", "payRate", "schedule", "description"].every(key => typeof job[key] === "string") && ["Pending", "Active", "Removed"].includes(job.status) && Number.isInteger(job.applicants) && job.applicants >= 0 && Array.isArray(job.requirements) && job.requirements.every((item: unknown) => typeof item === "string"));
+  return Array.isArray(value) && value.every(job => job && typeof job === "object" && ["id", "title", "careType", "date", "location", "postedBy", "payRate", "schedule", "description"].every(key => typeof job[key] === "string") && ["Pending", "Active", "Removed"].includes(job.status) && (job.priority === undefined || isCarePriority(job.priority)) && (job.careNeededBy === undefined || isCareNeededDate(job.careNeededBy)) && Number.isInteger(job.applicants) && job.applicants >= 0 && Array.isArray(job.requirements) && job.requirements.every((item: unknown) => typeof item === "string"));
 }
 export function filterCareJobs(jobs: AdminCareJob[], status: CareJobStatus | "All", query: string) {
   const search = query.trim().toLowerCase();
   return jobs.filter(job => (status === "All" || job.status === status) && `${job.title} ${job.location} ${job.postedBy} ${job.careType}`.toLowerCase().includes(search));
 }
+
+export function sortCareJobsByUrgency(jobs: AdminCareJob[]) { const rank = { Critical: 0, High: 1, Normal: 2 }; return [...jobs].sort((a, b) => Number(a.status === "Removed") - Number(b.status === "Removed") || rank[a.priority ?? "Normal"] - rank[b.priority ?? "Normal"] || (a.careNeededBy || "9999-12-31").localeCompare(b.careNeededBy || "9999-12-31")); }

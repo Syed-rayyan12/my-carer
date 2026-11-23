@@ -1,0 +1,14 @@
+"use client";
+import { useEffect, useState } from 'react';
+import { useAuth, LogoutButton } from './AuthBoundary';
+import { accountApi } from './auth-client';
+import ChangePasswordForm from '@/components/dashboard/settings/ChangePasswordForm';
+export function CareSeekerAccountSettings() {
+  const auth = useAuth(); const [profile, setProfile] = useState<Record<string, string> | null>(null); const [notice, setNotice] = useState(''); const [error, setError] = useState(''); const [busy, setBusy] = useState(false);
+  useEffect(() => { let active = true; accountApi<{ data: Record<string, string> }>('care-seekers/me').then(({ data }) => { if (active) setProfile(data); }).catch(() => { if (active) setError('Unable to load settings. Refresh to try again.'); }); return () => { active = false; }; }, []);
+  return <main className="mx-auto max-w-[1100px] space-y-6 p-6"><h1 className="font-commissioner text-4xl font-bold">Account Settings</h1>{error && <p role="alert" className="text-sm text-red-700">{error}</p>}{notice && <p role="status" className="text-sm text-green-700">{notice}</p>}{profile ? <form className="space-y-5 rounded-2xl border bg-white p-6" onSubmit={async event => {
+    event.preventDefault(); if (!auth || busy) return; setBusy(true); setError(''); setNotice('');
+    try { const input = { ...profile }; delete input.accountEmail; delete input.profileComplete; await accountApi('care-seekers/me', { method: 'PATCH', csrfToken: auth.csrfToken, body: input }); setNotice('Contact details and preferences saved. Your sign-in email has not changed.'); }
+    catch (issue) { setError(issue instanceof Error ? issue.message : 'Unable to save'); } finally { setBusy(false); }
+  }}><label className="block text-sm">Sign-in email<input readOnly value={auth?.user.email ?? ''} className="mt-2 h-11 w-full rounded-lg border bg-gray-50 px-3" /></label>{[{ key: 'email', label: 'Contact email', type: 'email' }, { key: 'phone', label: 'Phone number', type: 'tel' }].map(field => <label key={field.key} className="block text-sm">{field.label}<input type={field.type} value={profile[field.key]} maxLength={field.key === 'email' ? 254 : 30} onChange={event => setProfile({ ...profile, [field.key]: event.target.value })} className="mt-2 h-11 w-full rounded-lg border px-3" /></label>)}<label className="block text-sm">Listing language<select value={profile.language} onChange={event => setProfile({ ...profile, language: event.target.value })} className="mt-2 h-11 w-full rounded-lg border px-3">{['English (UK)', 'Welsh', 'Urdu', 'Punjabi'].map(value => <option key={value}>{value}</option>)}</select></label><button disabled={busy} className="rounded-lg bg-[#ff2f68] px-5 py-3 text-sm text-white">{busy ? 'Saving…' : 'Save settings'}</button></form> : !error && <p role="status">Loading settings…</p>}<ChangePasswordForm /><LogoutButton className="rounded-lg bg-[#ff2f68] px-5 py-3 text-sm text-white" /></main>;
+}

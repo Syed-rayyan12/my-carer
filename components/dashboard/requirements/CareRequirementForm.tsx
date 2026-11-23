@@ -39,7 +39,7 @@ export default function CareRequirementForm({ requirement }: { requirement?: Car
   function toggleTime(value: string) { setTimes(current => current.includes(value) ? current.filter(item => item !== value) : [...current, value]); }
 
   return (
-    <form className="overflow-hidden rounded-[11px] border border-[#d9d9d9] bg-white" onSubmit={event => {
+    <form className="overflow-hidden rounded-[11px] border border-[#d9d9d9] bg-white" onSubmit={async event => {
       event.preventDefault();
       if (!ready) return;
       if (!location.trim()) { setError("Please enter a location."); return; }
@@ -52,7 +52,8 @@ export default function CareRequirementForm({ requirement }: { requirement?: Car
         careType, location: location.trim(), recipient, startDate, frequency, preferredTimes: times, hours, budget: budget.trim(), description: description.trim(), preferences,
         schedule: unchangedSchedule ? requirement.schedule : `${frequency}: ${times.join(", ")} · ${hours} hours per visit`,
       };
-      if (requirement) updateRequirement(requirement.id, input); else createRequirement(input);
+      const saved = requirement ? await updateRequirement(requirement.id, input) : await createRequirement(input);
+      if (!saved) return;
       router.push("/care-seeker-dashboard/care-requirements");
     }}>
       <div className="grid grid-cols-2 gap-x-6 gap-y-6 px-5 pt-7 pb-9 max-[700px]:grid-cols-1">

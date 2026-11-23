@@ -5,7 +5,7 @@ export type ConversationMessage = {
   body: string;
   sender: "caregiver" | "you";
   createdAt: string;
-  delivery: "received" | "local";
+  delivery: "received" | "local" | "sent";
 };
 
 export type Conversation = {

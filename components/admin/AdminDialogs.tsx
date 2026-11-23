@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
@@ -12,7 +12,7 @@ import AdminCaregiverBadge from "./caregivers/AdminCaregiverBadge";
 import { getAdminCareSeekers } from "./care-seekers/adminCareSeekerData";
 
 export default function AdminDialogs() {
-  const { dialog, setDialog, data, search, setUserStatus } = useAdminDashboard();
+  const { dialog, setDialog, data, search, setUserStatus, busy, error } = useAdminDashboard();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const open = dialog !== null;
   const caregivers = getAdminCaregivers(data);
@@ -43,8 +43,8 @@ export default function AdminDialogs() {
         if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) setDialog(null);
       }}
     >
-      {dialog?.type === "approve" && user && <AdminApprovalModal key={`approve-${user.id}`} user={user} onCancel={() => setDialog(null)} onConfirm={() => { setUserStatus(user.id, "Active"); setDialog(null); }} />}
-      {dialog?.type === "reject" && user && <AdminRejectionModal key={`reject-${user.id}`} user={user} onCancel={() => setDialog(null)} onConfirm={reason => { setUserStatus(user.id, "Rejected", reason); setDialog(null); }} />}
+      {dialog?.type === "approve" && user && <AdminApprovalModal key={`approve-${user.id}`} user={user} busy={busy} error={error} onCancel={() => setDialog(null)} onConfirm={async () => { if (await setUserStatus(user.id, "Active")) setDialog(null); }} />}
+      {dialog?.type === "reject" && user && <AdminRejectionModal key={`reject-${user.id}`} user={user} busy={busy} error={error} onCancel={() => setDialog(null)} onConfirm={async reason => { if (await setUserStatus(user.id, "Rejected", reason)) setDialog(null); }} />}
       {!decision && (
         <>
           <header className="mb-5 flex items-center justify-between gap-3">
@@ -58,12 +58,12 @@ export default function AdminDialogs() {
                 <div><h3 className="font-jakarta text-base font-semibold">{user.name}</h3><p className="mt-1 font-nunito text-sm text-[#667085]">{user.type}</p></div>
               </div>
               <dl>
-                {[{ title: "Email", value: user.email }, { title: "Location", value: user.location }, { title: "Registered", value: user.date }].map(item => <div className="flex justify-between gap-3 border-t border-[#ececf0] py-3 font-nunito text-sm" key={item.title}><dt className="text-[#667085]">{item.title}</dt><dd className="break-all text-right">{item.value}</dd></div>)}
+                {[{title:"Account category",value:user.accountCategory||user.type},{ title: "Email", value: user.email }, { title: "Location", value: user.location }, { title: "Registered", value: user.date }].map(item => <div className="flex justify-between gap-3 border-t border-[#ececf0] py-3 font-nunito text-sm" key={item.title}><dt className="text-[#667085]">{item.title}</dt><dd className="break-all text-right">{item.value}</dd></div>)}
                 <div className="flex justify-between border-t border-[#ececf0] py-3 font-nunito text-sm"><dt className="text-[#667085]">Status</dt><dd><AdminStatusBadge status={user.status} /></dd></div>
                 {dialog.type === "caregiver" && <div className="flex justify-between border-t border-[#ececf0] py-3 font-nunito text-sm"><dt className="text-[#667085]">Verification</dt><dd><AdminCaregiverBadge value={caregivers.find(item => item.id === user.id)?.verification ?? "Pending"} /></dd></div>}
                 {user.rejectionReason && <div className="border-t border-[#ececf0] py-3 font-nunito text-sm"><dt className="mb-1 text-[#667085]">Reason for rejection</dt><dd className="whitespace-pre-wrap break-words text-[#344054]">{user.rejectionReason}</dd></div>}
               </dl>
-              <p className="mt-3 font-nunito text-xs text-[#98a2b3]">Example registration. Admin changes are saved on this device.</p>
+              <p className="mt-3 font-nunito text-xs text-[#98a2b3]">Live account record. Account decisions are saved to the database.</p>
               {dialog.type === "caregiver" && <div className="mt-5 flex justify-end gap-2"><button type="button" disabled={user.status === "Active"} className="rounded-lg bg-[#ff2f68] px-4 py-2 font-nunito text-sm text-white disabled:opacity-45" onClick={() => setDialog({ type: "approve", userId: user.id })}>Approve</button><button type="button" disabled={user.status === "Rejected"} className="rounded-lg border border-[#b91e13] px-4 py-2 font-nunito text-sm text-[#b91e13] disabled:opacity-45" onClick={() => setDialog({ type: "reject", userId: user.id })}>Reject</button></div>}
             </>
           )}

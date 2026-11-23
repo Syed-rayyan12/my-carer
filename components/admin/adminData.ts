@@ -2,7 +2,7 @@ import { initialAdminCaregivers, isAdminCaregiverList, type AdminCaregiver } fro
 import { initialAdminCareSeekers, isAdminCareSeekerList, type AdminCareSeeker } from "./care-seekers/adminCareSeekerData";
 
 export type AdminUserStatus = "Pending" | "Active" | "Rejected" | "Suspended";
-export type AdminUser = { id: string; name: string; initials: string; type: "Caregiver" | "Care Seeker"; date: string; email: string; location: string; status: AdminUserStatus; rejectionReason?: string };
+export type AdminUser = { id: string; name: string; initials: string; type: "Caregiver" | "Care Seeker"; date: string; email: string; location: string; status: AdminUserStatus; rejectionReason?: string; accountCategory?:string };
 export type AdminActivity = { id: string; kind: "registration" | "subscription" | "job" | "review" | "profile"; text: string; time: string };
 export type AdminSection = "all-users" | "caregivers" | "care-seekers" | "verification" | "care-jobs" | "care-requests" | "messages" | "reviews" | "blog" | "subscriptions" | "settings";
 export type AdminData = { users: AdminUser[]; activity: AdminActivity[]; caregivers?: AdminCaregiver[]; careSeekers?: AdminCareSeeker[] };

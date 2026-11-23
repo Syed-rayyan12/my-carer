@@ -29,7 +29,7 @@ export default function CareRequirementsPage() {
           ))}
         </div>
       )}
-      <CloseRequirementModal requirement={closing} onCancel={() => setClosing(null)} onConfirm={() => { if (!closing) return; closeRequirement(closing.id); setNotice(`"${closing.title}" has been closed.`); setClosing(null); }} />
+      <CloseRequirementModal requirement={closing} onCancel={() => setClosing(null)} onConfirm={async () => { if (!closing) return; if (!await closeRequirement(closing.id)) return; setNotice(`"${closing.title}" has been closed.`); setClosing(null); }} />
     </main>
   );
 }
