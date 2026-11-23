@@ -1,52 +1,36 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.npm-cache/
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# Local browser profile/crash data; never publish
-/.browser-style-check/
-
-# Original client document (runtime pricing data is versioned separately)
-/public/My-Carer-Pricing.docx
-
-# One-off local account maintenance
-/backend/scripts/reset-local-admin.ts
-/backend/scripts/clear-non-admin-users.ts
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
-.env*
-
-# vercel
-.vercel
-
-# typescript
+# Dependencies and generated output at any level
+node_modules/
+.next/
+.npm-cache/
+coverage/
+dist/
+out/
+build/
+.vercel/
 *.tsbuildinfo
 next-env.d.ts
+
+# Secrets and local files
+.env
+.env.*
+!.env.example
+*.pem
+*.log
+.DS_Store
+.browser-style-check/
+.test-postgres-path
+
+# Backend runtime/generated files
+backend/src/generated/
+backend/storage/
+backend/scripts/reset-local-admin.ts
+backend/scripts/clear-non-admin-users.ts
+
+# Duplicate local project copy and original client document
+/New folder/
+public/My-Carer-Pricing.docx
+
+# Original frontend copies retained locally after relocation
+/app/
+/components/
+/public/
