@@ -1,0 +1,11 @@
+**/.git
+**/node_modules
+**/.next
+**/.npm-cache
+**/.browser-style-check
+**/.env
+**/.env.*
+!**/.env.example
+**/*.log
+**/*.tsbuildinfo
+New folder
