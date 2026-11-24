@@ -15,6 +15,7 @@ import { accountApi } from "@/components/auth/auth-client";
 import type { WorkspaceSnapshot, Person } from "./workspace.types";
 import { loadMessages, mergeMessages } from './messages-api';
 import SaveToast from './SaveToast';
+import { useSaveNotice } from './useSaveNotice';
 import type { LiveMessage } from './workspace.types';
 export type * from "./workspace.types";
 const empty: WorkspaceSnapshot = {
@@ -49,9 +50,8 @@ function useWorkspaceState() {
   const snapshot = loadedFor === routeKey ? loadedSnapshot : empty;
   const [ready, setReady] = useState(false);
   const [error, setError] = useState("");
-  const [messageSyncError, setMessageSyncError] = useState('');
   const [chatOpen, setChatOpen] = useState(false);
-  const [notice, setNotice] = useState("");
+  const { notice, setNotice } = useSaveNotice(routeKey);
   const [busy, setBusy] = useState(false);
   const saving = useRef(false);
   // Only advance this cursor after a successful server read. A newly sent
@@ -90,9 +90,8 @@ function useWorkspaceState() {
         if (!active || epoch !== generation.current || saving.current) return;
         setSnapshot(current => ({ ...current, messages: mergeMessages(current.messages, incoming) }));
         if (incoming.length) messageCursor.current = incoming.at(-1)!.createdAt;
-        setMessageSyncError('');
       } catch {
-        if (active) setMessageSyncError('Messages could not refresh. Reconnecting automatically…');
+        // Background retries stay silent; retain the messages already displayed.
       } finally { pending = false; }
     };
     void poll();
@@ -126,9 +125,7 @@ function useWorkspaceState() {
   }, [refresh, routeKey, invalidatePending]);
   useEffect(() => {
     const focus = () => {
-      void refresh().catch((issue) =>
-        setError(issue instanceof Error ? issue.message : "Unable to refresh"),
-      );
+      void refresh().catch(() => { /* Background refresh stays silent. */ });
     };
     window.addEventListener("focus", focus);
     return () => window.removeEventListener("focus", focus);
@@ -173,7 +170,7 @@ function useWorkspaceState() {
     page,
     setPage,
     ready: ready && loadedFor === routeKey,
-    error: loadedFor === routeKey ? error || messageSyncError : "",
+    error: loadedFor === routeKey ? error : "",
     setError,
     setChatOpen,
     notice: loadedFor === routeKey ? notice : "",

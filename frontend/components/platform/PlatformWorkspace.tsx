@@ -1,5 +1,6 @@
 "use client";
 import SaveToast from './SaveToast';
+import { useSaveNotice } from './useSaveNotice';
 
 
 import Link from 'next/link';
@@ -43,7 +44,7 @@ function Empty({ children }: { children: ReactNode }) { return <p className={`${
 
 export default function PlatformWorkspace({ section = 'overview' }: { section?: string }) {
   const session = useAuth()!; const role = session.user.role; const admin = role === 'ADMIN'; const seeker = role === 'CARE_SEEKER';
-  const [records, setRecords] = useState<unknown>(null); const [error, setError] = useState(''); const [notice, setNotice] = useState(''); const [loading, setLoading] = useState(true); const [search, setSearch] = useState(''); const [recipientId, setRecipientId] = useState(''); const [editRequest, setEditRequest] = useState<RequestItem | null>(null);
+  const [records, setRecords] = useState<unknown>(null); const [error, setError] = useState(''); const { notice, setNotice } = useSaveNotice(usePathname() + ":" + section); const [loading, setLoading] = useState(true); const [search, setSearch] = useState(''); const [recipientId, setRecipientId] = useState(''); const [editRequest, setEditRequest] = useState<RequestItem | null>(null);
   const endpoint = section === 'overview' || section === 'membership' || section === 'settings' ? (admin ? 'admin/users' : 'membership') : section === 'users' ? 'admin/users' : ['profile', 'services', 'availability'].includes(section) ? 'professional' : section === 'arrangements' ? 'applications' : section;
   const load = useCallback(async () => { setError(''); setLoading(true); try { const result = await accountApi<{ data: unknown }>(`${section === 'profile' && seeker ? 'care-seekers/me' : `platform/${endpoint}`}${endpoint === 'caregivers' && search ? `?search=${encodeURIComponent(search)}` : ''}`); setRecords(result.data); } catch (issue) { setError(issue instanceof Error ? issue.message : 'Unable to load data'); } finally { setLoading(false); } }, [endpoint, search, section, seeker]);
   // Reset the page's loading state while synchronizing with its remote resource.

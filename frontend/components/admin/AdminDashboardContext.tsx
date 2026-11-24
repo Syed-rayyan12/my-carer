@@ -1,4 +1,6 @@
 "use client";
+import { useSaveNotice } from '@/components/platform/useSaveNotice';
+
 import { usePathname } from "next/navigation";
 import { loadAdminPage } from "./admin-api";
 import type { Pagination } from "@/components/platform/workspace-api";
@@ -47,7 +49,7 @@ function useLiveDashboard() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [notificationsRead, setNotificationsRead] = useState(false);
   const [dialog, setDialog] = useState<AdminDialog>(null);
-  const [notice, setNotice] = useState("");
+  const { notice, setNotice } = useSaveNotice(routeKey);
   const refresh = useCallback(async () => {
     const current = ++generation.current;
     const result = await loadAdminPage(pathname, page);
@@ -56,7 +58,7 @@ function useLiveDashboard() {
     setLoadedFor(routeKey);
     setPagination(result.pagination);
     setError("");
-    setNotice("");
+
     setReady(true);
   }, [pathname, page, routeKey]);
   const currentRefresh = useRef(refresh);
