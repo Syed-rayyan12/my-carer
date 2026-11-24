@@ -34,3 +34,7 @@ public/My-Carer-Pricing.docx
 /app/
 /components/
 /public/
+
+# Temporary local messaging checks
+/backend/tests/messages-client.test.ts
+/backend/tests/messages.service.test.ts

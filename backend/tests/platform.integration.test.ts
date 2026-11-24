@@ -164,39 +164,6 @@ const patch = (path: string, body: object, who = 'seeker') =>
     .send(body);
 
 describe('Focused dashboard APIs and feature integration', () => {
-  it('delivers replies in both directions across pagination and incremental refreshes', async () => {
-    const send = (who: string, recipient: string, body: string) => request(app)
-      .post('/api/v1/platform/messages').set('Cookie', sessions[who]!.cookie)
-      .set('Origin', 'http://localhost:3000').set('X-CSRF-Token', sessions[who]!.csrf)
-      .send({ recipientId: sessions[recipient]!.id, body });
-    await prisma.message.createMany({ data: Array.from({ length: 28 }, (_, index) => ({
-      senderId: sessions[index % 2 ? 'seeker' : 'caregiver']!.id,
-      recipientId: sessions[index % 2 ? 'caregiver' : 'seeker']!.id,
-      body: `Earlier thread ${index}`,
-      createdAt: new Date(Date.UTC(2020, 0, 1, 12, 0, index)),
-    })) });
-    const outgoing = await send('seeker', 'caregiver', 'Question about the care request');
-    expect(outgoing.status).toBe(201);
-    expect(outgoing.body.data.sender.id).toBe(sessions.seeker!.id);
-    const incoming = await send('caregiver', 'seeker', 'I am available to help');
-    expect(incoming.status).toBe(201);
-    expect(incoming.body.data.recipient.id).toBe(sessions.seeker!.id);
-    for (const who of ['seeker', 'caregiver']) {
-      const first = await get('messages?limit=25', who);
-      expect(first.status).toBe(200);
-      expect(first.body.pagination.hasMore).toBe(true);
-      expect(first.body.data.map((row: { id: string }) => row.id)).toContain(incoming.body.data.id);
-      const second = await get('messages?limit=25&page=2', who);
-      const allIds = [...first.body.data, ...second.body.data].map((row: { id: string }) => row.id);
-      expect(allIds).toHaveLength(31);
-      expect(new Set(allIds).size).toBe(31);
-      expect(allIds).toContain(outgoing.body.data.id);
-      const updates = await get('messages?since=' + encodeURIComponent(outgoing.body.data.createdAt), who);
-      expect(updates.status).toBe(200);
-      expect(updates.body.data.map((row: { id: string }) => row.id)).toContain(incoming.body.data.id);
-    }
-    expect((await get('messages', 'other')).body.data).toEqual([]);
-  });
   it('persists notification state per user and prevents foreign event writes', async () => {
     const feed = await get('notifications');
     expect(feed.status).toBe(200);

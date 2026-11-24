@@ -9,3 +9,6 @@
 **/*.log
 **/*.tsbuildinfo
 New folder
+
+# Keep test sources out of deployment images
+**/tests
