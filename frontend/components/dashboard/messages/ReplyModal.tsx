@@ -8,11 +8,12 @@ import type { DirectoryCaregiver } from "../caregivers/caregiverDirectoryData";
 import { formatMessageTime, type Conversation } from "./messagesData";
 
 export default function ReplyModal({ conversation, caregiver, onClose, onDraftChange, onReply, onStar, onArchive }: { conversation: Conversation | null; caregiver: DirectoryCaregiver | null; onClose: () => void; onDraftChange: (draft: string) => void; onReply: () => Promise<boolean>; onStar: () => void; onArchive: () => void }) {
-  const {error,busy}=useLiveWorkspace();
+  const {error,busy,setChatOpen}=useLiveWorkspace();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const historyRef = useRef<HTMLDivElement>(null);
   const [savedNotice, setSavedNotice] = useState(false);
   const open = Boolean(conversation && caregiver);
+  useEffect(() => { setChatOpen(open); return () => setChatOpen(false); }, [open, setChatOpen]);
   const [previousOpen, setPreviousOpen] = useState(open);
   if (previousOpen !== open) {
     setPreviousOpen(open);
@@ -43,7 +44,7 @@ export default function ReplyModal({ conversation, caregiver, onClose, onDraftCh
       </div>
       <form className="border-t border-[#ececf0] px-6 pt-4 pb-5 max-[500px]:px-4" onSubmit={async event => { event.preventDefault(); if (!conversation?.draft.trim()) return; if (await onReply()) setSavedNotice(true); }}>
         <label htmlFor="conversation-reply" className="mb-2 block font-nunito text-sm font-semibold">Your reply</label>
-        <textarea id="conversation-reply" required maxLength={2000} rows={3} autoFocus value={conversation?.draft ?? ""} onChange={event => { onDraftChange(event.target.value); setSavedNotice(false); }} onKeyDown={event => { if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) { event.preventDefault(); event.currentTarget.form?.requestSubmit(); } }} placeholder="Write a thoughtful reply..." className="block max-h-40 min-h-24 w-full resize-y rounded-xl border border-[#d9dde3] bg-white px-3.5 py-3 font-nunito text-sm outline-none placeholder:text-[#98a2b3] focus:border-[#ff2f68] focus:ring-2 focus:ring-[#ff2f68]/10" />
+        <textarea id="conversation-reply" disabled={busy} required maxLength={2000} rows={3} autoFocus value={conversation?.draft ?? ""} onChange={event => { onDraftChange(event.target.value); setSavedNotice(false); }} onKeyDown={event => { if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) { event.preventDefault(); event.currentTarget.form?.requestSubmit(); } }} placeholder="Write a thoughtful reply..." className="block max-h-40 min-h-24 w-full resize-y rounded-xl border border-[#d9dde3] bg-white px-3.5 py-3 font-nunito text-sm outline-none placeholder:text-[#98a2b3] focus:border-[#ff2f68] focus:ring-2 focus:ring-[#ff2f68]/10" />
         <div className="mt-1.5 flex justify-between gap-3 font-nunito text-[10px] text-[#98a2b3]"><span>Ctrl / ⌘ + Enter to send your reply</span><span>{conversation?.draft.length ?? 0}/2000</span></div>
         {error && <p role="alert" className="mt-3 text-sm text-red-700">{error}</p>}{savedNotice && <p role="status" className="mt-3 flex items-center gap-1.5 font-nunito text-xs text-[#039855]"><CheckCheck size={15} />Reply sent.</p>}
         <div className="mt-4 flex items-center justify-between gap-4 max-[500px]:flex-wrap"><p className="max-w-[320px] font-nunito text-[11px] leading-relaxed text-[#98a2b3]">Messages are private between you and the recipient.</p><button type="submit" disabled={busy || !conversation?.draft.trim()} className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-[#ff2f68] px-5 py-2.5 font-nunito text-sm font-semibold text-white hover:bg-[#e92359] disabled:cursor-not-allowed disabled:opacity-50"><Send size={16} />Send Reply</button></div>

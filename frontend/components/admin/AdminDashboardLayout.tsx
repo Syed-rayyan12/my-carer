@@ -10,6 +10,7 @@ import AdminHeader from "./AdminHeader";
 import AdminSidebar from "./AdminSidebar";
 import AdminDialogs from "./AdminDialogs";
 import { AdminContentProvider } from "./AdminContentContext";
+import SaveToast from '@/components/platform/SaveToast';
 
 function AdminShell({ children }: { children: ReactNode }) {
   const {
@@ -52,14 +53,7 @@ function AdminShell({ children }: { children: ReactNode }) {
             </button>
           </div>
         )}
-        {notice && (
-          <p
-            role="status"
-            className="mx-8 mb-4 rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-800"
-          >
-            {notice}
-          </p>
-        )}
+        {notice && <SaveToast key={notice} message={notice} />}
         {busy && (
           <p role="status" className="sr-only">
             Saving changes

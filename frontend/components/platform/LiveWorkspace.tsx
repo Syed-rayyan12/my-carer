@@ -13,6 +13,9 @@ import { loadWorkspacePage, type Pagination } from "./workspace-api";
 import { useAuth } from "@/components/auth/AuthBoundary";
 import { accountApi } from "@/components/auth/auth-client";
 import type { WorkspaceSnapshot, Person } from "./workspace.types";
+import { loadMessages, mergeMessages } from './messages-api';
+import SaveToast from './SaveToast';
+import type { LiveMessage } from './workspace.types';
 export type * from "./workspace.types";
 const empty: WorkspaceSnapshot = {
   account: {},
@@ -46,24 +49,64 @@ function useWorkspaceState() {
   const snapshot = loadedFor === routeKey ? loadedSnapshot : empty;
   const [ready, setReady] = useState(false);
   const [error, setError] = useState("");
+  const [messageSyncError, setMessageSyncError] = useState('');
+  const [chatOpen, setChatOpen] = useState(false);
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
   const saving = useRef(false);
+  // Only advance this cursor after a successful server read. A newly sent
+  // message must not hide an unseen reply created just before it.
+  const messageCursor = useRef<string | undefined>(undefined);
   const refresh = useCallback(async () => {
     const current = ++generation.current;
     const result = await loadWorkspacePage(pathname, page);
     if (current !== generation.current) return;
-    setSnapshot({ ...empty, ...result.snapshot });
+    setSnapshot(current => ({
+      ...empty,
+      ...result.snapshot,
+      messages: mergeMessages(current.messages, result.snapshot.messages ?? []),
+    }));
+    if (result.snapshot.messages) messageCursor.current = result.snapshot.messages.at(-1)?.createdAt;
     setLoadedFor(routeKey);
     setPagination(result.pagination);
     setError("");
-    setNotice("");
     setReady(true);
   }, [pathname, page, routeKey]);
   const currentRefresh = useRef(refresh);
   useEffect(() => {
     currentRefresh.current = refresh;
   }, [refresh]);
+  useEffect(() => {
+    if (!ready || loadedFor !== routeKey || (!chatOpen && !pathname.endsWith('/messages'))) return;
+    let active = true;
+    let pending = false;
+    const poll = async () => {
+      if (!active || pending || saving.current || document.visibilityState === 'hidden') return;
+      pending = true;
+      const epoch = generation.current;
+      try {
+        const since = messageCursor.current;
+        const incoming = await loadMessages(since);
+        if (!active || epoch !== generation.current || saving.current) return;
+        setSnapshot(current => ({ ...current, messages: mergeMessages(current.messages, incoming) }));
+        if (incoming.length) messageCursor.current = incoming.at(-1)!.createdAt;
+        setMessageSyncError('');
+      } catch {
+        if (active) setMessageSyncError('Messages could not refresh. Reconnecting automatically…');
+      } finally { pending = false; }
+    };
+    void poll();
+    const interval = window.setInterval(() => { void poll(); }, 5000);
+    const visible = () => { if (document.visibilityState === 'visible') void poll(); };
+    document.addEventListener('visibilitychange', visible);
+    window.addEventListener('online', visible);
+    return () => {
+      active = false;
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', visible);
+      window.removeEventListener('online', visible);
+    };
+  }, [pathname, ready, loadedFor, routeKey, chatOpen]);
   useEffect(() => {
     let active = true;
     void refresh().catch((issue) => {
@@ -101,17 +144,28 @@ function useWorkspaceState() {
     setError("");
     setNotice("");
     try {
-      await accountApi(path, { method, body, csrfToken: auth.csrfToken });
-      await currentRefresh.current();
-      setNotice("Changes saved.");
-      return true;
+      generation.current++;
+      const response = await accountApi<{ data?: LiveMessage }>(path, { method, body, csrfToken: auth.csrfToken });
+      if (path === 'platform/messages' && response.data?.sender && response.data?.recipient) {
+        const sent = response.data;
+        setSnapshot(current => ({ ...current, messages: mergeMessages(current.messages, [sent]) }));
+        setNotice('Message sent.');
+      } else setNotice('Changes saved.');
     } catch (issue) {
       setError(issue instanceof Error ? issue.message : "Unable to save");
+      saving.current = false;
+      setBusy(false);
       return false;
-    } finally {
+    }
+    // A successful write stays successful even when the follow-up read fails.
+    // Otherwise the composer keeps its draft and encourages duplicate sends.
+    try { await currentRefresh.current(); }
+    catch { setError('Saved successfully, but the page could not refresh. Please refresh to load the latest data.'); }
+    finally {
       saving.current = false;
       setBusy(false);
     }
+    return true;
   };
   return {
     snapshot,
@@ -119,8 +173,9 @@ function useWorkspaceState() {
     page,
     setPage,
     ready: ready && loadedFor === routeKey,
-    error: loadedFor === routeKey ? error : "",
+    error: loadedFor === routeKey ? error || messageSyncError : "",
     setError,
+    setChatOpen,
     notice: loadedFor === routeKey ? notice : "",
     busy,
     refresh,
@@ -175,14 +230,7 @@ export function WorkspaceFeedback() {
           {error}
         </p>
       )}
-      {notice && (
-        <p
-          role="status"
-          className="mx-8 mb-4 rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-800"
-        >
-          {notice}
-        </p>
-      )}
+      {notice && <SaveToast key={notice} message={notice} />}
     </>
   );
 }

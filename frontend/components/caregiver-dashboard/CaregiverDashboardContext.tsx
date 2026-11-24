@@ -272,6 +272,12 @@ function useCaregiverState() {
         .filter((m) => m.senderId === person.id)
         .map((m) => m.body)
         .join("\n\n"),
+      messages: messages.map(message => ({
+        id: message.id,
+        body: message.body,
+        createdAt: message.createdAt,
+        sender: message.senderId === live.user.id ? 'you' : 'contact',
+      })),
       status: latest?.senderId === live.user.id ? "Replied" : "New",
       replies: messages
         .filter((m) => m.senderId === live.user.id)
@@ -281,8 +287,11 @@ function useCaregiverState() {
       unread: false,
     };
   });
-  const saveReply = (id: string, reply: string) =>
-    live.mutate("platform/messages", { recipientId: id, body: reply }, "POST");
+  const saveReply = async (id: string, reply: string) => {
+    const saved = await live.mutate("platform/messages", { recipientId: id, body: reply }, "POST");
+    if (saved) setDrafts(current => ({ ...current, [id]: '' }));
+    return saved;
+  };
   const updateConversation = (item: CaregiverConversation) => {
     if (item.status === "Archived") {
       live.setError("Archiving is not enabled.");
@@ -290,14 +299,8 @@ function useCaregiverState() {
     }
     setDrafts((current) => ({ ...current, [item.id]: item.draft }));
   };
-  const startConversation = (name: string, subject: string) => {
-    const request =
-      snapshot.requests.find(
-        (item) => personName(item.owner) === name && item.title === subject,
-      ) ??
-      snapshot.applications
-        .map((item) => item.request)
-        .find((item) => personName(item.owner) === name);
+  const startConversation = (applicationId: string) => {
+    const request = snapshot.applications.find(item => item.id === applicationId)?.request;
     if (request)
       setPendingContacts((current) =>
         current.some((p) => p.id === request.ownerId)

@@ -1,4 +1,4 @@
-export type CaregiverConversation = { id: string; name: string; initials: string; subject: string; message: string; status: "New" | "Replied" | "Archived"; replies: string[]; draft: string; time: string; unread: boolean };
+export type CaregiverConversation = { messages?: { id: string; body: string; createdAt: string; sender: "you" | "contact" }[]; id: string; name: string; initials: string; subject: string; message: string; status: "New" | "Replied" | "Archived"; replies: string[]; draft: string; time: string; unread: boolean };
 export const initialCaregiverConversations: CaregiverConversation[] = [
   { id: "sarah-dementia", name: "Sarah Mitchell", initials: "SM", subject: "Re: Dementia Care Companion", message: "Hi Sarah, are you available next Monday?", status: "New", replies: [], draft: "", time: "2 min ago", unread: true },
   { id: "john-elderly", name: "John Brown", initials: "JB", subject: "Re: Elderly Caregiver", message: "Thank you for applying. We'd like to discuss the care plan.", status: "New", replies: [], draft: "", time: "1 hr ago", unread: true },

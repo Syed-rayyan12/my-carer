@@ -7,24 +7,27 @@ import * as validation from './messages.validation.js';
 import { identity } from '../shared/user-select.js';
 
 export async function getMessages(context: OperationInput) {
-  const { page, limit, skip, take } = pagination(context.query);
+  const query = validation.messageQuerySchema.parse(context.query);
+  const { page, limit, skip, take } = pagination(query);
   const id = context.user!.id;
-  return {
-    statusCode: 200,
-    body: paginated(
-      (
-        await repository.findManyMessage({
-          where: { OR: [{ senderId: id }, { recipientId: id }] },
-          include: { sender: { select: identity }, recipient: { select: identity } },
-          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
-          skip,
-          take,
-        })
-      ).reverse(),
-      page,
-      limit,
-    ),
-  };
+  const result = paginated(
+    await repository.findManyMessage({
+      where: {
+        OR: [{ senderId: id }, { recipientId: id }],
+        ...(query.since ? { createdAt: { gte: new Date(query.since) } } : {}),
+      },
+      include: { sender: { select: identity }, recipient: { select: identity } },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      skip,
+      take,
+    }),
+    page,
+    limit,
+  );
+  // Trim the pagination lookahead before reversing; otherwise the newest
+  // message is discarded whenever there is another page.
+  result.data.reverse();
+  return { statusCode: 200, body: result };
 }
 export async function postMessages(context: OperationInput) {
   const data = validation.sendMessageSchema.parse(context.body);
@@ -51,6 +54,11 @@ export async function postMessages(context: OperationInput) {
   }
   return {
     statusCode: 201,
-    body: { data: await repository.createMessage({ data: { ...data, senderId: user.id } }) },
+    body: {
+      data: await repository.createMessage({
+        data: { ...data, senderId: user.id },
+        include: { sender: { select: identity }, recipient: { select: identity } },
+      }),
+    },
   };
 }

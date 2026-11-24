@@ -1,4 +1,5 @@
 import { accountApi } from "@/components/auth/auth-client";
+import { loadMessages } from './messages-api';
 import type { WorkspaceSnapshot, LiveCaregiver } from "./workspace.types";
 
 export type Pagination = { page: number; limit: number; hasMore: boolean };
@@ -157,7 +158,7 @@ export async function loadWorkspacePage(
   } else if (section === "my-applications") {
     actions.push(list("applications", "platform/applications", true));
   } else if (section === "messages") {
-    actions.push(list("messages", "platform/messages", true));
+    actions.push(loadMessages().then(messages => { result.messages = messages; }));
   } else if (section === "reviews-ratings") {
     actions.push(list("reviews", "platform/reviews", true));
     if (!caregiver)
