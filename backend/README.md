@@ -81,3 +81,11 @@ Set the backend service root directory to `/backend` and provide the runtime var
 Keep Prisma CLI available in the deployment image for the pre-deploy command. Do not enable dependency pruning that removes it without moving Prisma to production dependencies.
 
 Prisma generation only needs the schema and does not connect to the database. Database migration requires the database service to be running and reachable; Railway pre-deploy commands can reach its private network. Do not use `prisma migrate dev` or reset commands against the deployed database.
+
+## Prisma CLI version and update notices
+
+The CLI, generated client, and PostgreSQL adapter are pinned together to Prisma 7.10.1. Prisma 8 is a release candidate with a different PostgreSQL API and CLI; installing `prisma@latest` is not a compatible dependency-only upgrade for this application. See https://www.prisma.io/docs/orm/release-status.
+
+Use the project scripts (`npm run db:generate`, `npm run db:deploy`, `npm run db:migrate`, and `npm run db:studio`). Their Node wrapper disables only the optional Prisma update banner. Command output, warnings, errors, and failure exit codes remain intact. Railway's backend pre-deploy command should be `npm run db:deploy`.
+
+For a direct Prisma CLI invocation outside these scripts, `PRISMA_HIDE_UPDATE_MESSAGE=true` hides the same notice. This notice does not indicate a failed build or migration.
