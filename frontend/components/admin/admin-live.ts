@@ -102,6 +102,7 @@ export type AdminSnapshot = {
     createdAt: string;
   }[];
   verifications: {
+    upload?: { id: string; name: string; type: string } | null;
     id: string;
     user: Person & { professional: { location: string } | null };
     kind: string;
@@ -380,7 +381,8 @@ export function mapVerifications(
           ? "Rejected"
           : "Pending",
     reason: item.reason ?? undefined,
-    reference: item.reference,
+    reference: item.upload?.name ?? item.reference,
+    uploadId: item.upload?.id,
   }));
 }
 export function mapSubscriptions(snapshot: AdminSnapshot): AdminSubscription[] {

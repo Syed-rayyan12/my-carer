@@ -16,7 +16,8 @@ export const phoneSchema = z
   .max(64, 'Enter a UK phone number, for example 07712 345678 or +44 7712 345678')
   .transform((value, context) => {
     if (!value) return '';
-    const formatted = value.replace(/[‐‑‒–—]/g, '-');
+    let formatted = value.replace(/[‐‑‒–—]/g, '-');
+    if (/^44\d{9,10}$/.test(formatted.replace(/[\s()-]/g, ''))) formatted = '+' + formatted;
     const number = parsePhoneNumberFromString(formatted, { defaultCountry: 'GB', extract: false });
     // Validate the UK dialling format, including reserved UK test-number ranges.
     const ukFormat =

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import BlogCards from "./BlogCards";
+import { Suspense } from 'react';
+import BlogCardsSkeleton from './BlogCardsSkeleton';
 export default function JournalSection({ variant = "default" }: { variant?: "default" | "about" }) {
   return (<section className={`relative bg-[#fff] ${variant === "about" ? "p-[38px_0_48px] max-[600px]:p-[32px_0_40px]" : "p-[85px_0]"}`}>
 
@@ -64,7 +66,7 @@ export default function JournalSection({ variant = "default" }: { variant?: "def
     </div>
 
 
-    <BlogCards limit={3} />
+    <Suspense fallback={<BlogCardsSkeleton />}><BlogCards limit={3} /></Suspense>
     <div className="flex justify-center"><Link href="/blogs" className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[#101929] px-5 text-sm font-semibold text-white hover:bg-[#25334a]">View all articles<ArrowRight size={16} /></Link></div>
 
   </section>);

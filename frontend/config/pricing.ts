@@ -11,6 +11,8 @@ export type PlanId =
   | "AGENCY_ENTERPRISE"
   | "FAMILY_FREE";
 export type BillingInterval = "monthly" | "annual";
+export const registrationRole = (id: PlanId): 'CARE_SEEKER' | 'CAREGIVER' =>
+  id === 'FAMILY_FREE' ? 'CARE_SEEKER' : 'CAREGIVER';
 export type PricingPlan = {
   id: PlanId;
   category: "CAREGIVER" | "CARE_HOME" | "CARE_AGENCY" | "CARE_SEEKER";

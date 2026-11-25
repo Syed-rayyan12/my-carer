@@ -1,3 +1,4 @@
+import { isHiringAccount } from '../membership/plan-policy.js';
 import { pagination, paginated } from '../shared/pagination.validation.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { requireFeature } from '../membership/plans.js';
@@ -14,7 +15,7 @@ export async function getApplications(context: OperationInput) {
   const user = context.user!;
   const verification = validation.verificationFilterSchema.parse(context.query.verification);
   if (verification) await requireFeature(user.id, 'candidateFilters');
-  if (user.role === 'CAREGIVER') {
+  if (user.role === 'CAREGIVER' && !isHiringAccount(user)) {
     const rows = await repository.findManyApplication({
       where: {
         caregiverId: user.id,
@@ -54,7 +55,7 @@ export async function getApplications(context: OperationInput) {
                   },
                 }
               : {}),
-            ...(user.role === 'CARE_SEEKER' ? { request: { ownerId: user.id } } : {}),
+            ...(isHiringAccount(user) ? { request: { ownerId: user.id } } : {}),
           },
           include: {
             caregiver: {

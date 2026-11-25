@@ -1,3 +1,4 @@
+import { isHiringAccount } from '../membership/plan-policy.js';
 import type { RequestHandler } from 'express';
 import { rateLimit } from 'express-rate-limit';
 import { env } from '../../config/env.js';
@@ -94,5 +95,11 @@ export const passwordWorkLimit: RequestHandler = (_req, res, next) => {
   };
   res.once('finish', release);
   res.once('close', release);
+  next();
+};
+
+export const requireHiringAccount: RequestHandler = (req, _res, next) => {
+  if (!req.auth || !isHiringAccount(req.auth.user))
+    throw new ApiError(403, 'A care-seeker or organisation account is required');
   next();
 };

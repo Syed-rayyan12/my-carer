@@ -12,3 +12,9 @@ export async function accountApi<T>(path: string, options: { method?: 'POST' | '
   return payload as T;
 }
 export const getSession = async (activity = false) => (await accountApi<{ data: AuthSession }>('auth/me', { activity })).data;
+export async function accountFile(path: string): Promise<Blob> {
+  const result = await fetch(`/api/${path}`, { credentials: 'same-origin', cache: 'no-store',
+    headers: { 'X-Account-Context': getAccountContext() } });
+  if (!result.ok) throw new AuthApiError('The document could not be loaded. Please try again.', result.status);
+  return result.blob();
+}

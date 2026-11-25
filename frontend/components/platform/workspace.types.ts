@@ -127,6 +127,7 @@ export type WorkspaceSnapshot = {
   saved: { caregiverId: string }[];
   reviews: LiveReview[];
   verifications: {
+    upload?: { id: string; name: string; type: string } | null;
     id: string;
     kind: string;
     reference: string;

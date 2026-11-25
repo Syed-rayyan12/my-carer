@@ -14,7 +14,7 @@ export const planIds = [
 export type PlanId = (typeof planIds)[number];
 export const defaultPlanId = (role: string): PlanId =>
   role === 'CAREGIVER' ? 'CARER_FREE' : 'FAMILY_FREE';
-export const planRole = (id: string) => (id.startsWith('CARER_') ? 'CAREGIVER' : 'CARE_SEEKER');
+export const planRole = (id: string) => (id === 'FAMILY_FREE' ? 'CARE_SEEKER' : 'CAREGIVER');
 export type Entitlements = Record<string, boolean | number | null>;
 export function addCalendarMonths(date: Date, months: number) {
   const result = new Date(date);
@@ -54,3 +54,6 @@ export function membershipAccess(
     entitlements: active ? (membership.plan.entitlements as Entitlements) : ({} as Entitlements),
   };
 }
+
+export const isHiringAccount = (user: { role: string; accountCategory?: string | null }) =>
+  user.role === 'CARE_SEEKER' || ['CARE_HOME', 'CARE_AGENCY'].includes(user.accountCategory ?? '');

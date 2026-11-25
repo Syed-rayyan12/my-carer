@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import {
   createContext,
   useContext,
@@ -328,8 +328,9 @@ function useCaregiverState() {
             : "Pending",
       uploaded: item.createdAt.slice(0, 10),
       expiry: "",
-      fileName: item.reference,
-      notes: "Submitted certificate reference",
+      fileName: item.upload?.name ?? item.reference,
+      uploadId: item.upload?.id,
+      notes: "",
       reason: item.reason ?? undefined,
     }),
   );
@@ -452,7 +453,7 @@ function useCaregiverState() {
                 : document.type === "ID Proof"
                   ? "IDENTITY"
                   : "QUALIFICATION",
-          reference: document.fileName,
+          uploadId: document.uploadId,
         },
         "POST",
       ),

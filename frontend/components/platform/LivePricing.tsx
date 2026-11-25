@@ -1,4 +1,5 @@
-﻿"use client";
+"use client";
+import { registrationRole } from '@/config/pricing';
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
@@ -7,7 +8,6 @@ import {
   Check,
   ChevronDown,
   Gift,
-  HeartHandshake,
   House,
   LockKeyhole,
   ShieldCheck,
@@ -335,7 +335,7 @@ export default function LivePricing({ home = false }: { home?: boolean }) {
         <SignupModal
           key={`${selected.plan.id}-${selected.interval}`}
           dedicatedPlan
-          initialRole={selected.plan.defaultRole}
+          initialRole={registrationRole(selected.plan.id)}
           initialPlanId={selected.plan.id}
           initialBillingInterval={selected.interval}
           title={`${selected.plan.tier} registration`}

@@ -61,6 +61,7 @@ model User {
   reviewsWritten      Review[] @relation("Reviewer")
   reviewsReceived     Review[] @relation("Reviewed")
   verifications       Verification[]
+  uploadedFiles       UploadedFile[]
   notificationStates  NotificationState[]
 
   @@index([role, status, createdAt])
@@ -216,9 +217,24 @@ model Verification {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   kind String @db.VarChar(80)
   reference String @db.VarChar(300)
+  uploadId String? @db.Uuid
+  upload UploadedFile? @relation(fields: [uploadId], references: [id], onDelete: Restrict)
   status String @default("PENDING")
   reason String? @db.VarChar(1000)
   createdAt DateTime @default(now())
+}
+
+model UploadedFile {
+  id String @id @db.Uuid
+  userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name String @db.VarChar(200)
+  type String @db.VarChar(80)
+  purpose String @db.VarChar(32)
+  content Bytes
+  createdAt DateTime @default(now())
+  verifications Verification[]
+  @@index([userId, createdAt])
 }
 
 model CareSeekerProfile {

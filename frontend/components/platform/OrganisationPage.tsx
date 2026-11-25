@@ -15,6 +15,7 @@ const input =
 export default function OrganisationPage() {
   const live = useLiveWorkspace();
   const { snapshot, ready, mutate, busy } = live;
+  const root = live.user.role === 'CAREGIVER' ? '/caregiver-dashboard' : '/care-seeker-dashboard';
   const [tab, setTab] = useState("Profile");
   const [filter, setFilter] = useState("");
   const [jobs, setJobs] = useState<LiveRequest[]>([]);
@@ -143,7 +144,7 @@ export default function OrganisationPage() {
           </button>
         ))}
         <Link
-          href="/care-seeker-dashboard/package-tools"
+          href={`${root}/package-tools`}
           className="rounded-lg bg-white px-4 py-2 text-sm"
         >
           Analytics
@@ -567,10 +568,12 @@ export default function OrganisationPage() {
   );
 }
 function Locked({ label }: { label: string }) {
+  const { user } = useLiveWorkspace();
+  const root = user.role === 'CAREGIVER' ? '/caregiver-dashboard' : '/care-seeker-dashboard';
   return (
     <p className="mt-4 rounded-lg bg-[#fff5f8] p-3 text-xs text-[#a32149]">
       {label} is not included in this package.{" "}
-      <Link href="/care-seeker-dashboard/membership" className="underline">
+      <Link href={`${root}/membership`} className="underline">
         Compare packages
       </Link>
       .

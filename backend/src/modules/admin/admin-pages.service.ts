@@ -173,7 +173,10 @@ export async function getVerifications(context: OperationInput) {
   const { page, limit, skip, take } = pagination(context.query);
   return paginated(
     await repository.findManyVerification({
-      include: { user: { select: { ...identity, professional: { select: { location: true } } } } },
+      include: {
+        user: { select: { ...identity, professional: { select: { location: true } } } },
+        upload: { select: { id: true, name: true, type: true } },
+      },
       orderBy: { createdAt: 'desc' },
       skip,
       take,

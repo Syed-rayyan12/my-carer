@@ -34,6 +34,11 @@ export const publicUser = (user: {
   profileComplete: user.role !== 'CARE_SEEKER' || isCareSeekerProfileComplete(user.profile),
 });
 export const signup = async (input: SignupInput) => {
+  if (input.phone && (await repository.findUserByPhone(input.phone)))
+    throw new ApiError(
+      409,
+      'This phone number is already registered. Use another number or sign in.',
+    );
   const passwordHash = await hashPassword(input.password);
   await repository.createSeeker(input, passwordHash);
   return {
@@ -48,7 +53,8 @@ export const login = async (input: LoginInput) => {
   const stored = user?.passwordHash ?? (await (dummyHash ??= hashPassword(newToken())));
   const valid = await verifyPassword(input.password, stored);
   if (!user || !valid || user.role !== input.role) {
-    if (!rateLimitsDisabled() && user && user.role === input.role) await repository.recordFailedLogin(user.id);
+    if (!rateLimitsDisabled() && user && user.role === input.role)
+      await repository.recordFailedLogin(user.id);
     throw new ApiError(401, 'Invalid email or password for this account type');
   }
   if (!rateLimitsDisabled() && user.lockedUntil && user.lockedUntil > new Date())

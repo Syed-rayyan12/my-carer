@@ -1,5 +1,5 @@
 export type DocumentStatus = "Pending" | "Approved" | "Rejected";
-export type VerificationRecord = { id: string; name: string; initials: string; location: string; document: string; submitted: string; status: DocumentStatus; reason?: string; reference?: string };
+export type VerificationRecord = { uploadId?: string; id: string; name: string; initials: string; location: string; document: string; submitted: string; status: DocumentStatus; reason?: string; reference?: string };
 export const initialVerificationRecords: VerificationRecord[] = [
   { id: "sarah-mitchell-dbs", name: "Sarah Mitchell", initials: "SM", location: "London", document: "DBS Certificate", submitted: "3 Sep 2026", status: "Pending" },
   { id: "sarah-smith-qualification", name: "Sarah Smith", initials: "SS", location: "Bristol", document: "Qualification Certificate", submitted: "2 Sep 2026", status: "Pending" },

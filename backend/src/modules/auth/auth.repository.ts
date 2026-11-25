@@ -9,6 +9,12 @@ export const findUserByEmail = (email: string) =>
   prisma.user.findUnique({ where: { email }, include: { profile: true } });
 export const findUserById = (id: string) =>
   prisma.user.findUnique({ where: { id }, include: { profile: true } });
+export const findUserByPhone = async (phone: string) => {
+  const rows = await prisma.$queryRaw<{ userId: string }[]>`
+    SELECT "userId" FROM "CareSeekerProfile"
+    WHERE normalise_uk_phone("phone") = normalise_uk_phone(${phone}) LIMIT 1`;
+  return rows[0] ?? null;
+};
 export const createSeeker = (input: SignupInput, passwordHash: string) =>
   prisma.$transaction(async (tx) => {
     const planId = input.planId ?? defaultPlanId(input.role);
@@ -66,7 +72,10 @@ export const createSession = (
     const user = await tx.user.findUniqueOrThrow({ where: { id: userId } });
     if (user.passwordHash !== expectedPasswordHash)
       throw new ApiError(401, 'Credentials changed. Please sign in again.');
-    if (user.status !== 'ACTIVE' || (!rateLimitsDisabled() && user.lockedUntil && user.lockedUntil > new Date()))
+    if (
+      user.status !== 'ACTIVE' ||
+      (!rateLimitsDisabled() && user.lockedUntil && user.lockedUntil > new Date())
+    )
       throw new ApiError(403, 'Account is not available for sign in');
     await tx.user.update({
       where: { id: userId },

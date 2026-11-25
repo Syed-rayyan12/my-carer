@@ -1,4 +1,5 @@
 "use client";
+import { registrationRole } from '@/config/pricing';
 import Link from "next/link";
 import type { PlanId, PricingPlan, BillingInterval } from "@/config/pricing";
 import { accountDestination } from "@/config/auth-routing";
@@ -167,10 +168,11 @@ export function SignupForm({
   initialBillingInterval?: BillingInterval;
   dedicatedPlan?: boolean;
 }) {
-  const [role, setRole] = useState(initialRole);
+  const startingRole = initialPlanId ? registrationRole(initialPlanId) : initialRole;
+  const [role, setRole] = useState(startingRole);
   const [planId, setPlanId] = useState<PlanId>(
     initialPlanId ??
-      (initialRole === "CAREGIVER" ? "CARER_FREE" : "FAMILY_FREE"),
+      (startingRole === "CAREGIVER" ? "CARER_FREE" : "FAMILY_FREE"),
   );
   const billingInterval = initialBillingInterval;
   const [plans, setPlans] = useState<PricingPlan[]>([]);

@@ -1,3 +1,4 @@
+import { isHiringAccount } from '../membership/plan-policy.js';
 import { pagination, paginated } from '../shared/pagination.validation.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { accessFor } from '../membership/plans.js';
@@ -12,13 +13,13 @@ export async function getRequests(context: OperationInput) {
   const user = context.user!;
   const where = {
     ...(context.query.id ? { id: validation.requestIdQuery.parse(context.query.id) } : {}),
-    ...(user.role === 'CARE_SEEKER'
+    ...(isHiringAccount(user)
       ? { ownerId: user.id }
       : user.role === 'CAREGIVER'
         ? { status: 'OPEN', owner: { status: 'ACTIVE' as const } }
         : {}),
   };
-  if (user.role === 'CAREGIVER') {
+  if (user.role === 'CAREGIVER' && !isHiringAccount(user)) {
     const rows = await repository.findManyCareRequest({
       where,
       include: {

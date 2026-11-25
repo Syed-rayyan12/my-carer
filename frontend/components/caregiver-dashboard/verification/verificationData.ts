@@ -1,6 +1,6 @@
 export const caregiverDocumentTypes = ["ID Proof", "DBS Certificate", "Qualification", "Right to Work", "Proof of Address"] as const;
 export type CaregiverDocumentType = typeof caregiverDocumentTypes[number];
-export type CaregiverVerificationDocument = { id: string; type: CaregiverDocumentType; status: "Approved" | "Pending" | "Rejected"; uploaded: string; expiry: string; fileName: string; notes: string; reason?: string; local?: boolean };
+export type CaregiverVerificationDocument = { uploadId?: string; id: string; type: CaregiverDocumentType; status: "Approved" | "Pending" | "Rejected"; uploaded: string; expiry: string; fileName: string; notes: string; reason?: string; local?: boolean };
 export const initialCaregiverDocuments: CaregiverVerificationDocument[] = [
   { id: "identity", type: "ID Proof", status: "Approved", uploaded: "2026-09-02", expiry: "", fileName: "identity-proof.pdf", notes: "" },
   { id: "dbs", type: "DBS Certificate", status: "Approved", uploaded: "2026-09-02", expiry: "2026-10-14", fileName: "enhanced-dbs.pdf", notes: "" },

@@ -24,7 +24,12 @@ export const errorHandler: ErrorRequestHandler = (error: unknown, req, res, next
   } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
     if (error.code === 'P2002') {
       statusCode = 409;
-      message = 'Resource already exists';
+      const detail = JSON.stringify(error.meta ?? {}) + error.message;
+      message = /phone/i.test(detail)
+        ? 'This phone number is already registered. Use another number or sign in.'
+        : error.meta?.modelName === 'User'
+          ? 'An account with this email or phone number already exists.'
+          : 'Resource already exists';
     } else if (error.code === 'P2025') {
       statusCode = 404;
       message = 'Resource not found';
