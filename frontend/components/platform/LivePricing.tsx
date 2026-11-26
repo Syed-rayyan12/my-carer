@@ -104,7 +104,7 @@ export default function LivePricing({ home = false }: { home?: boolean }) {
           <div>
             <strong>Your first 6 months are on us.</strong>
             <p>
-              All paid plans include a six-month launch trial. No card required
+              All paid plans include a six-month launch trial. Register first
               to start.
             </p>
           </div>
@@ -260,7 +260,7 @@ export default function LivePricing({ home = false }: { home?: boolean }) {
         <div className={styles.footer}>
           <span>
             <LockKeyhole size={14} />
-            No card to start
+            No charge during your trial
           </span>
           <span>
             <Gift size={14} />6 months free on paid plans

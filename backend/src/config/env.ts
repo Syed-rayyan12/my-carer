@@ -7,6 +7,11 @@ if (existsSync('.env')) loadEnvFile('.env');
 
 const envSchema = z
   .object({
+    STRIPE_ENABLED: z.enum(['true', 'false']).default('false'),
+    STRIPE_MODE: z.enum(['test', 'live']).default('test'),
+    STRIPE_SECRET_KEY: z.string().min(1).optional(),
+    STRIPE_WEBHOOK_SECRET: z.string().startsWith('whsec_').optional(),
+    BILLING_RETURN_ORIGIN: z.url().optional(),
     PORT: z.coerce.number().int().min(1).max(65535),
     NODE_ENV: z.enum(['development', 'test', 'production']),
     DATABASE_URL: z.url().refine((value) => /^postgres(?:ql)?:\/\//.test(value), {
@@ -43,6 +48,14 @@ const envSchema = z
     FRONTEND_TEST_URL: z.url().optional(),
   })
   .superRefine((value, context) => {
+    if (value.STRIPE_ENABLED === 'true') {
+      if (!value.STRIPE_SECRET_KEY?.startsWith(value.STRIPE_MODE === 'test' ? 'sk_test_' : 'sk_live_'))
+        context.addIssue({ code: 'custom', path: ['STRIPE_SECRET_KEY'], message: 'Set a secret key matching STRIPE_MODE' });
+      if (!value.STRIPE_WEBHOOK_SECRET)
+        context.addIssue({ code: 'custom', path: ['STRIPE_WEBHOOK_SECRET'], message: 'Set the endpoint signing secret' });
+      if (!value.BILLING_RETURN_ORIGIN || !value.CORS_ORIGIN.split(',').map(v => v.trim()).includes(value.BILLING_RETURN_ORIGIN))
+        context.addIssue({ code: 'custom', path: ['BILLING_RETURN_ORIGIN'], message: 'Use the application frontend origin from CORS_ORIGIN' });
+    }
     if (value.NODE_ENV === 'production' && value.CORS_ORIGIN === '*') {
       context.addIssue({
         code: 'custom',

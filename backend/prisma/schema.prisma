@@ -93,7 +93,17 @@ model BlogPost {
   @@index([status, createdAt])
 }
 
+model StripeWebhookEvent {
+  id String @id @db.VarChar(255)
+  processedAt DateTime @default(now())
+}
+
 model Membership {
+  stripeCustomerId String? @unique
+  stripeSubscriptionId String? @unique
+  stripeStatus String?
+  stripeCheckoutId String? @unique
+  cancelAtPeriodEnd Boolean @default(false)
   billingInterval String @default("monthly") @db.VarChar(10)
   trialStartedAt DateTime?
   trialEndsAt DateTime?

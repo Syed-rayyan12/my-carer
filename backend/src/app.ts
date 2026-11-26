@@ -8,6 +8,8 @@ import { publicPlansLimiter, rateLimiter } from './middlewares/rateLimiter.middl
 import { errorHandler, notFound } from './middlewares/error.middleware.js';
 import { router } from './routes/index.js';
 
+import { stripeWebhook } from './modules/billing/billing.routes.js';
+
 export const app = express();
 
 app.set('trust proxy', env.TRUST_PROXY);
@@ -22,6 +24,8 @@ app.use(
   }),
 );
 app.use(compression());
+// Stripe signatures require the unparsed body; this endpoint authenticates with its signature.
+app.post('/api/v1/stripe/webhook', express.raw({ type: 'application/json', limit: '1mb' }), stripeWebhook);
 app.use('/api/v1/platform/uploads', express.json({ limit: '15mb' }));
 app.use('/api/v1/platform/admin/blog', express.json({ limit: '4mb' }));
 app.use(express.json({ limit: '1mb' }));

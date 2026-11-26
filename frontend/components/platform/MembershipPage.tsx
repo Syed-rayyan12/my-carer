@@ -1,5 +1,5 @@
 ﻿"use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Gift, ShieldCheck, Check, ArrowRight } from "lucide-react";
 import { accountApi } from "@/components/auth/auth-client";
@@ -9,9 +9,49 @@ import {
   type BillingInterval,
   formatPrice,
 } from "@/config/pricing";
+import { useAuth } from "@/components/auth/AuthBoundary";
 import { useLiveWorkspace } from "./LiveWorkspace";
 export default function MembershipPage() {
-  const { snapshot, user, mutate, busy } = useLiveWorkspace();
+  const { snapshot, user, mutate, busy, refresh } = useLiveWorkspace();
+  const session = useAuth()!;
+  const [billing, setBilling] = useState<{ enabled: boolean; mode: string; subscribed: boolean; cancelAtPeriodEnd: boolean } | null>(null);
+  const [billingBusy, setBillingBusy] = useState(false);
+  const billingPending = useRef(false);
+  async function redirectToBilling(action: 'checkout' | 'portal', selectedPlan = planId, selectedInterval = interval) {
+    if (billingPending.current) return;
+    billingPending.current = true; setBillingBusy(true); setError('');
+    try {
+      const response = await accountApi<{ data: { url: string } }>(`platform/membership/${action}`, {
+        method: 'POST', csrfToken: session.csrfToken,
+        body: action === 'checkout' ? { planId: selectedPlan, billingInterval: selectedInterval } : {},
+      });
+      const target = new URL(response.data.url);
+      if (target.protocol !== 'https:' || !['checkout.stripe.com', 'billing.stripe.com'].includes(target.hostname)) throw new Error('Invalid billing destination');
+      window.location.assign(target.href);
+    } catch (issue) {
+      setError(issue instanceof Error ? issue.message : 'Unable to open billing.');
+      billingPending.current = false; setBillingBusy(false);
+    }
+  }
+  useEffect(() => {
+    let active = true;
+    accountApi<{ data: NonNullable<typeof billing> }>('platform/membership/billing')
+      .then(result => { if (active) setBilling(result.data); })
+      .catch(() => { if (active) setError('Unable to load billing settings. Please refresh.'); });
+    return () => { active = false; };
+  }, [snapshot.membership?.status, snapshot.membership?.planId, snapshot.membership?.trialEndsAt, snapshot.membership?.paidThrough]);
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('billing') !== 'success') return;
+    let pending = false;
+    let attempts = 0;
+    const timer = window.setInterval(() => {
+      if (pending) return;
+      if (++attempts > 15) { window.clearInterval(timer); return; }
+      pending = true;
+      void refresh().catch(() => {}).finally(() => { pending = false; });
+    }, 2000);
+    return () => window.clearInterval(timer);
+  }, [refresh]);
   const m = snapshot.membership;
   const [plans, setPlans] = useState<PricingPlan[]>([]);
   const membershipKey = m ? m.planId + ":" + m.billingInterval : "";
@@ -45,7 +85,7 @@ export default function MembershipPage() {
       (m?.plan?.category ??
         (user.role === "CAREGIVER" ? "CAREGIVER" : "CARE_SEEKER")),
   );
-  const trial = m?.trialEndsAt && new Date(m.trialEndsAt) > new Date();
+  const trial = snapshot.access?.trial === true;
   const root =
     user.role === "CAREGIVER"
       ? "/caregiver-dashboard"
@@ -61,6 +101,8 @@ export default function MembershipPage() {
           See what is included, manage your trial, and choose your next step.
         </p>
       </header>
+      {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
+      {billing?.mode === 'test' && billing.enabled && <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-900">Test billing: use Stripe test cards. No real payments are collected.</p>}
       <section className="grid gap-5 lg:grid-cols-[1.3fr_1fr]">
         <div className="rounded-xl border border-[#f6bdd0] bg-[#fff5f8] p-6">
           <div className="flex items-center gap-2 text-[#c71d50]">
@@ -91,21 +133,22 @@ export default function MembershipPage() {
               <strong>
                 {new Date(m!.trialEndsAt!).toLocaleDateString("en-GB")}
               </strong>
-              . No card required.
+              {billing?.enabled ? '. Your saved payment method is charged after the trial unless you cancel.' : '. No card required.'}
             </p>
           )}
           <p className="mt-3 text-xs leading-6 text-[#667085]">
             {m?.paidThrough
               ? `Paid access through ${new Date(m.paidThrough).toLocaleDateString("en-GB")}.`
               : "No paid period has been recorded."}{" "}
-            Cancellation retains access until your trial or paid period ends.
-            Payment is arranged with the administrator; no automatic charge is
-            taken.
+            Cancellation retains access until your trial or paid period ends.{" "}
+            {billing?.enabled
+              ? 'Subscriptions renew automatically after the trial. Manage your payment method and cancellation through Stripe.'
+              : 'Payment is arranged with the administrator; no automatic charge is taken.'}
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
-            {m && m.pricePence > 0 && !trial && (
+            {billing && !billing.enabled && m && m.pricePence > 0 && !trial && (
               <button
-                disabled={busy}
+                disabled={busy || billingBusy}
                 onClick={() =>
                   void mutate("platform/membership/request", {}, "POST")
                 }
@@ -114,7 +157,17 @@ export default function MembershipPage() {
                 Request renewal
               </button>
             )}
-            {m && m.pricePence > 0 && m.status !== "CANCELLED" && (
+            {billing?.enabled && m && m.pricePence > 0 && !billing.subscribed && <button
+              disabled={busy || billingBusy}
+              onClick={() => void redirectToBilling('checkout', m.planId as PlanId, m.billingInterval)}
+              className="rounded-lg bg-[#ff2f68] px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
+            >{billingBusy ? 'Opening Stripe...' : 'Start subscription'}</button>}
+            {billing?.enabled && billing.subscribed && <button
+              disabled={busy || billingBusy} onClick={() => void redirectToBilling('portal')}
+              className="rounded-lg bg-[#ff2f68] px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
+            >Manage billing</button>}
+            {billing?.cancelAtPeriodEnd && <p className="w-full text-sm">Renewal cancelled. Access continues until your current trial or paid period ends.</p>}
+            {billing && m && m.pricePence > 0 && m.status !== "CANCELLED" && !billing.cancelAtPeriodEnd && (!billing.enabled || billing.subscribed) && (
               <button
                 disabled={busy}
                 onClick={() =>
@@ -157,7 +210,11 @@ export default function MembershipPage() {
         <form
           onSubmit={async (event) => {
             event.preventDefault();
-            if (!planId) return;
+            if (!planId || !selected || !billing) return;
+            if (billing.enabled && selected.pricePence > 0) {
+              await redirectToBilling('checkout');
+              return;
+            }
             await mutate(
               "platform/membership/change",
               { planId, billingInterval: interval },
@@ -205,13 +262,13 @@ export default function MembershipPage() {
           </div>
           <button
             disabled={
-              busy ||
+              busy || billingBusy || !billing ||
               !selected ||
-              (planId === m?.planId && interval === m?.billingInterval)
+              (planId === m?.planId && interval === m?.billingInterval && !(billing?.enabled && selected?.pricePence > 0 && !billing.subscribed))
             }
             className="mt-5 inline-flex items-center gap-2 rounded-lg bg-[#ff2f68] px-5 py-3 text-sm font-semibold text-white disabled:opacity-40"
           >
-            {busy ? "Updating..." : "Update package"}
+            {busy || billingBusy ? "Please wait..." : billing?.enabled && (selected?.pricePence ?? 0) > 0 ? "Continue to Stripe" : "Update package"}
             <ArrowRight size={15} />
           </button>
         </form>

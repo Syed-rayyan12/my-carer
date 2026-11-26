@@ -129,7 +129,7 @@ describe('Authentication validation and cryptography', () => {
 
 describe('document packages use their dedicated login role',()=>{
  for(const planId of ['CARER_FREE','CARER_VERIFIED','CARER_PRO','HOME_BASIC','HOME_ENHANCED','HOME_PREMIUM','AGENCY_STARTER','AGENCY_GROWTH','AGENCY_GROWTH_PLUS','AGENCY_ENTERPRISE','FAMILY_FREE']) {
-  const role=planId.startsWith('CARER_')?'CAREGIVER':'CARE_SEEKER';
+  const role=planId==='FAMILY_FREE'?'CARE_SEEKER':'CAREGIVER';
   const input={...valid,role,planId,organisationName:'Test organisation'};
   it('accepts '+planId+' with '+role,()=>expect(signupSchema.parse(input)).toMatchObject({role,planId}));
   it('rejects the wrong role for '+planId,()=>expect(signupSchema.safeParse({...input,role:role==='CAREGIVER'?'CARE_SEEKER':'CAREGIVER'}).success).toBe(false));

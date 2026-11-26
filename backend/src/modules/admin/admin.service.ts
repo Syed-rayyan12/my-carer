@@ -12,6 +12,8 @@ export async function patchAdminMembershipsById(context: OperationInput) {
   const existing = await repository.findUniqueMembership({ where: { userId } });
   if (!existing || existing.pricePence === 0)
     throw new ApiError(409, 'This account has no paid package to activate');
+  if (existing.stripeSubscriptionId || existing.stripeCheckoutId)
+    throw new ApiError(409, 'Stripe manages this membership. Use Stripe Billing to change it.');
   const date = new Date(data.paidThrough);
   if (date <= new Date() || date.getTime() > Date.now() + 367 * 86400000)
     throw new ApiError(400, 'Paid-through date must be within the next 367 days');

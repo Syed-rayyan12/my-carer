@@ -1,3 +1,5 @@
+import { env } from '../../config/env.js';
+import { cancelSubscription, expirePendingCheckout } from '../billing/billing.service.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { planFor } from './plans.js';
 import { planRole, addCalendarMonths } from './plan-policy.js';
@@ -19,14 +21,16 @@ export async function getMembership(context: OperationInput) {
             })
           )?.plan ?? (await planFor(context.user!.role)),
         membership: await repository.findUniqueMembership({ where: { userId: context.user!.id } }),
-        paymentMode: 'manual',
-        instructions:
-          'Request activation. An administrator must verify payment before activating membership.',
+        paymentMode: env.STRIPE_ENABLED === 'true' ? 'stripe' : 'manual',
+        instructions: env.STRIPE_ENABLED === 'true'
+          ? 'Use Stripe Checkout to start a subscription or Manage Billing for an existing subscription.'
+          : 'Request activation. An administrator must verify payment before activating membership.',
       },
     },
   };
 }
 export async function postMembershipRequest(context: OperationInput) {
+  if (env.STRIPE_ENABLED === 'true') throw new ApiError(409, 'Use Stripe Checkout to activate your subscription.');
   if (context.user!.role === 'ADMIN') throw new ApiError(403, 'Admins do not need a membership');
   const userId = context.user!.id;
   const existing = await repository.findUniqueMembership({ where: { userId } });
@@ -52,6 +56,11 @@ export async function postMembershipRequest(context: OperationInput) {
   };
 }
 export async function postMembershipCancel(context: OperationInput) {
+  const current = await repository.findUniqueMembership({ where: { userId: context.user!.id } });
+  if (current?.stripeSubscriptionId) {
+    await cancelSubscription(context.user!.id);
+    return { statusCode: 200, body: { data: { cancelAtPeriodEnd: true } } };
+  }
   return {
     statusCode: 200,
     body: {
@@ -75,6 +84,9 @@ export async function postMembershipChange(context: OperationInput) {
       where: { userId: user.id },
       include: { plan: true },
     });
+    if (old?.stripeSubscriptionId && !['canceled', 'incomplete_expired'].includes(old.stripeStatus ?? ''))
+      throw new ApiError(409, 'Manage your subscription in Billing. Package changes are available after cancellation completes.');
+    if (env.STRIPE_ENABLED === 'true' && plan.pricePence > 0) throw new ApiError(409, 'Use Stripe Checkout to select a paid package.');
     if (old && old.plan.category !== plan.category)
       throw new ApiError(403, 'Package changes must stay within your registered account category');
     if (old && old.planId === plan.id && old.billingInterval === input.billingInterval) return old;
@@ -88,6 +100,7 @@ export async function postMembershipChange(context: OperationInput) {
       if (count > Number((plan.entitlements as Record<string, unknown>).jobLimit))
         throw new ApiError(409, 'Close excess job postings before changing to this package');
     }
+    if (old?.stripeCheckoutId) await expirePendingCheckout(old.stripeCheckoutId);
     let trialStartedAt = old?.trialStartedAt ?? null;
     let trialEndsAt = old?.trialEndsAt ?? null;
     if (!trialStartedAt && plan.trialMonths > 0) {
@@ -101,6 +114,10 @@ export async function postMembershipChange(context: OperationInput) {
           ? 'TRIAL'
           : 'PENDING';
     const data = {
+      stripeSubscriptionId: null,
+      stripeStatus: null,
+      stripeCheckoutId: null,
+      cancelAtPeriodEnd: false,
       planId: plan.id,
       billingInterval: input.billingInterval,
       pricePence: input.billingInterval === 'annual' ? plan.annualPricePence : plan.pricePence,

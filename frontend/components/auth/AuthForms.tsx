@@ -254,7 +254,7 @@ export function SignupForm({
               </p>
               {selected.pricePence > 0 && (
                 <p className="mt-2 text-xs text-[#a31b47]">
-                  No card required. Your trial starts after account approval.
+                  After account approval, open Membership to activate your selected plan.
                 </p>
               )}
             </div>

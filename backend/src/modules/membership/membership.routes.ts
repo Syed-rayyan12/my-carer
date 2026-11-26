@@ -1,6 +1,10 @@
 import { Router } from 'express';
 import * as controller from './membership.controller.js';
+import { checkoutRoute, portalRoute, billingStatusRoute } from '../billing/billing.routes.js';
 export const membershipRouter = Router();
+membershipRouter.get('/membership/billing', billingStatusRoute);
+membershipRouter.post('/membership/checkout', checkoutRoute);
+membershipRouter.post('/membership/portal', portalRoute);
 membershipRouter.get('/membership', controller.getMembership);
 membershipRouter.post('/membership/request', controller.postMembershipRequest);
 membershipRouter.post('/membership/cancel', controller.postMembershipCancel);
