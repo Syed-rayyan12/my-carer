@@ -105,7 +105,23 @@ export async function createCheckout(userId: string, body: unknown) {
 export async function createPortal(userId: string) {
   const member = await prisma.membership.findUnique({ where: { userId }, include: { user: true } });
   if (!member?.stripeCustomerId) throw new ApiError(409, 'Complete subscription Checkout first.');
-  const portal = await stripeClient().billingPortal.sessions.create({
+  const stripe = stripeClient();
+  const configs = await stripe.billingPortal.configurations.list({ active: true, limit: 100 });
+  const existing = configs.data.find(config => config.metadata?.application === 'my-carer' && config.metadata?.purpose === 'subscriptions-v1');
+  const settings: Stripe.BillingPortal.ConfigurationCreateParams = {
+    business_profile: { headline: 'Manage your My Carer subscription' },
+    metadata: { application: 'my-carer', purpose: 'subscriptions-v1' },
+    features: {
+      invoice_history: { enabled: true }, payment_method_update: { enabled: true },
+      subscription_cancel: { enabled: true, mode: 'at_period_end' },
+      subscription_update: { enabled: false },
+    },
+  };
+  const configuration = existing
+    ? await stripe.billingPortal.configurations.update(existing.id, settings)
+    : await stripe.billingPortal.configurations.create(settings, { idempotencyKey: `my-carer-portal-v1-${env.STRIPE_MODE}` });
+  const portal = await stripe.billingPortal.sessions.create({
+    configuration: configuration.id,
     customer: member.stripeCustomerId, return_url: returnUrl(member.user.role),
   });
   return { url: portal.url };
