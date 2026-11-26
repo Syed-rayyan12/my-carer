@@ -4,6 +4,7 @@ import { accountApi, AuthApiError, getSession, type AuthSession } from './auth-c
 import { NotificationsProvider } from '@/components/dashboard/Notifications';
 import { accountChannel } from './tab-session';
 import { accountDestination } from '@/config/auth-routing';
+import BillingBoundary from './BillingBoundary';
 const AuthContext = createContext<AuthSession | null>(null);
 export const useAuth = () => useContext(AuthContext);
 export function AuthBoundary({ role, children }: { role: 'ADMIN' | 'CARE_SEEKER' | 'CAREGIVER'; children: ReactNode }) {
@@ -24,7 +25,7 @@ export function AuthBoundary({ role, children }: { role: 'ADMIN' | 'CARE_SEEKER'
     return () => { active = false; window.removeEventListener('pointerdown', activity); window.removeEventListener('keydown', activity); clearInterval(interval); channel.close(); window.removeEventListener('focus', focus); window.removeEventListener('pageshow', pageshow); };
   }, [role]);
   if (!session) return <main className="grid min-h-screen place-items-center bg-[#fff7f9] p-6"><p role="status">{error || 'Checking your session…'}</p></main>;
-  return <AuthContext.Provider value={session}><NotificationsProvider key={session.user.id}><div>{children}</div></NotificationsProvider></AuthContext.Provider>;
+  return <AuthContext.Provider value={session}><BillingBoundary key={session.user.id} session={session}><NotificationsProvider key={session.user.id}><div>{children}</div></NotificationsProvider></BillingBoundary></AuthContext.Provider>;
 }
 export function LogoutButton({ className, children = 'Logout' }: { className?: string; children?: ReactNode }) {
   const session = useAuth(); const [busy, setBusy] = useState(false); const [error, setError] = useState('');

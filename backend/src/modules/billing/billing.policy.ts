@@ -1,4 +1,15 @@
-import { addCalendarMonths } from '../membership/plan-policy.js';
+import { addCalendarMonths, membershipAccess } from '../membership/plan-policy.js';
+
+export function requiresBillingCheckout(member: {
+  pricePence: number; status: string; paidThrough: Date | null; trialEndsAt: Date | null;
+  stripeSubscriptionId: string | null; stripeStatus: string | null;
+  plan: { entitlements: unknown };
+} | null, now = new Date()) {
+  if (!member || member.pricePence === 0) return false;
+  const confirmed = !!member.stripeSubscriptionId &&
+    ['trialing', 'active', 'past_due'].includes(member.stripeStatus ?? '');
+  return !confirmed || !membershipAccess(member, now).active;
+}
 
 export function checkoutTrialEnd(
   membership: { trialStartedAt: Date | null; trialEndsAt: Date | null },

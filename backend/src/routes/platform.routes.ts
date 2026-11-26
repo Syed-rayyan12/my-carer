@@ -21,7 +21,13 @@ import { accountRouter } from '../modules/account/account.routes.js';
 import { dashboardRouter } from '../modules/dashboard/dashboard.routes.js';
 import { uploadsRouter, profilePhotosRouter } from '../modules/uploads/uploads.routes.js';
 import { blogAdminRouter, blogPublicRouter } from '../modules/blog/blog.routes.js';
+import { requireCompletedBilling } from '../modules/billing/billing.middleware.js';
 export const platformRouter = Router();
+// A public, non-sensitive version probe lets deployment checks distinguish
+// the billing-capable backend from a stale service behind the frontend proxy.
+platformRouter.get('/health', (_req, res) => {
+  res.set('Cache-Control', 'no-store').json({ status: 'ok', billingApiVersion: 2 });
+});
 platformRouter.use(pricingPublicRouter);
 platformRouter.use(caregiversPublicRouter);
 platformRouter.use(careRequestsPublicRouter);
@@ -36,6 +42,7 @@ platformRouter.use(requireAuth, (req, res, next) => {
     return requireOrigin(req, res, () => requireCsrf(req, res, next));
   next();
 });
+platformRouter.use(requireCompletedBilling);
 platformRouter.use(accountRouter);
 platformRouter.use(uploadsRouter);
 platformRouter.use(blogAdminRouter);

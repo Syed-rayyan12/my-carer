@@ -6,7 +6,7 @@ import { prisma } from '../../config/db.js';
 import type { Prisma } from '../../generated/prisma/client.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { planRole } from '../membership/plan-policy.js';
-import { checkoutTrialEnd, subscriptionAccessStatus } from './billing.policy.js';
+import { checkoutTrialEnd, subscriptionAccessStatus, requiresBillingCheckout } from './billing.policy.js';
 
 let client: Stripe | undefined;
 export function stripeClient() {
@@ -18,8 +18,8 @@ const checkoutInput = z.strictObject({
   planId: z.string().min(1).max(40),
   billingInterval: z.enum(['monthly', 'annual']),
 });
-function returnUrl(role: string) {
-  return `${env.BILLING_RETURN_ORIGIN}/${role === 'CAREGIVER' ? 'caregiver-dashboard' : 'care-seeker-dashboard'}/membership`;
+function returnUrl(role: string, membership = false) {
+  return `${env.BILLING_RETURN_ORIGIN}/${role === 'CAREGIVER' ? 'caregiver-dashboard' : 'care-seeker-dashboard'}${membership ? '/membership' : ''}`;
 }
 async function lockUser(tx: Prisma.TransactionClient, userId: string) {
   await tx.$queryRaw`SELECT id FROM "User" WHERE id=${userId}::uuid FOR UPDATE`;
@@ -130,10 +130,18 @@ export async function cancelSubscription(userId: string) {
 }
 
 export async function billingStatus(userId: string) {
-  const member = await prisma.membership.findUnique({ where: { userId } });
+  const member = await prisma.membership.findUnique({ where: { userId }, include: { plan: true } });
   return { enabled: env.STRIPE_ENABLED === 'true', mode: env.STRIPE_MODE,
     subscribed: !!member?.stripeSubscriptionId && !['canceled', 'incomplete_expired'].includes(member.stripeStatus ?? ''),
-    cancelAtPeriodEnd: member?.cancelAtPeriodEnd ?? false };
+    cancelAtPeriodEnd: member?.cancelAtPeriodEnd ?? false,
+    requiresCheckout: requiresBillingCheckout(member),
+    plan: member ? {
+      id: member.planId, title: member.plan.title, category: member.plan.category,
+      pricePence: member.pricePence, billingInterval: member.billingInterval,
+      currency: member.plan.currency, trialMonths: member.plan.trialMonths,
+      trialStartedAt: member.trialStartedAt, trialEndsAt: member.trialEndsAt,
+    } : null,
+  };
 }
 
 function objectId(value: string | { id: string } | null | undefined) {
