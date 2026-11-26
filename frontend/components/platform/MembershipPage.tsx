@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Gift, ShieldCheck, Check, ArrowRight } from "lucide-react";
-import { accountApi } from "@/components/auth/auth-client";
+import { accountApi, AuthApiError } from "@/components/auth/auth-client";
 import {
   type PricingPlan,
   type PlanId,
@@ -15,6 +15,8 @@ export default function MembershipPage() {
   const { snapshot, user, mutate, busy, refresh } = useLiveWorkspace();
   const session = useAuth()!;
   const [billing, setBilling] = useState<{ enabled: boolean; mode: string; subscribed: boolean; cancelAtPeriodEnd: boolean } | null>(null);
+  const [billingReload, setBillingReload] = useState(0);
+  const [billingLoadError, setBillingLoadError] = useState("");
   const [billingBusy, setBillingBusy] = useState(false);
   const billingPending = useRef(false);
   async function redirectToBilling(action: 'checkout' | 'portal', selectedPlan = planId, selectedInterval = interval) {
@@ -35,11 +37,16 @@ export default function MembershipPage() {
   }
   useEffect(() => {
     let active = true;
+    setBillingLoadError("");
     accountApi<{ data: NonNullable<typeof billing> }>('platform/membership/billing')
       .then(result => { if (active) setBilling(result.data); })
-      .catch(() => { if (active) setError('Unable to load billing settings. Please refresh.'); });
+      .catch(issue => {
+        if (!active) return;
+        const message = issue instanceof Error ? issue.message : 'Unable to load billing settings.';
+        setBillingLoadError(issue instanceof AuthApiError ? `${message} (HTTP ${issue.statusCode})` : message);
+      });
     return () => { active = false; };
-  }, [snapshot.membership?.status, snapshot.membership?.planId, snapshot.membership?.trialEndsAt, snapshot.membership?.paidThrough]);
+  }, [snapshot.membership?.status, snapshot.membership?.planId, snapshot.membership?.trialEndsAt, snapshot.membership?.paidThrough, billingReload]);
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get('billing') !== 'success') return;
     let pending = false;
@@ -101,6 +108,10 @@ export default function MembershipPage() {
           See what is included, manage your trial, and choose your next step.
         </p>
       </header>
+      {billingLoadError && <div role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
+        <p>{billingLoadError}</p>
+        <button type="button" onClick={() => setBillingReload(value => value + 1)} className="mt-2 font-semibold underline">Retry billing settings</button>
+      </div>}
       {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
       {billing?.mode === 'test' && billing.enabled && <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-900">Test billing: use Stripe test cards. No real payments are collected.</p>}
       <section className="grid gap-5 lg:grid-cols-[1.3fr_1fr]">

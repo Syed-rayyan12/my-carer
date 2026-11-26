@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs';
 import { loadEnvFile } from 'node:process';
 import pino from 'pino';
 import { z } from 'zod';
+import { billingReturnOriginSchema } from './billing-origin.js';
 
 if (existsSync('.env')) loadEnvFile('.env');
 
@@ -11,7 +12,7 @@ const envSchema = z
     STRIPE_MODE: z.enum(['test', 'live']).default('test'),
     STRIPE_SECRET_KEY: z.string().min(1).optional(),
     STRIPE_WEBHOOK_SECRET: z.string().startsWith('whsec_').optional(),
-    BILLING_RETURN_ORIGIN: z.url().optional(),
+    BILLING_RETURN_ORIGIN: billingReturnOriginSchema.optional(),
     PORT: z.coerce.number().int().min(1).max(65535),
     NODE_ENV: z.enum(['development', 'test', 'production']),
     DATABASE_URL: z.url().refine((value) => /^postgres(?:ql)?:\/\//.test(value), {
